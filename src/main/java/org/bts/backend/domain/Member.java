@@ -16,7 +16,8 @@ import org.bts.backend.domain.constant.AuthProvider;
 import org.bts.backend.domain.converter.AuthProviderConverter;
 
 @Entity
-@Table(indexes = {
+@Table(
+    indexes = {
     @Index(columnList = "email", unique = true),
     @Index(columnList = "password")
 })
