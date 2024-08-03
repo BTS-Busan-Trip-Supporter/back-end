@@ -21,7 +21,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     // 인증 시도, HTTPRequest, HTTPResponse를 받아서 인증을 시도하는 메소드
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response){
-
         return null;
     }
 
