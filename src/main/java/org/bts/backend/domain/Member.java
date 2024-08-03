@@ -1,18 +1,15 @@
 package org.bts.backend.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bts.backend.domain.constant.AuthProvider;
+import org.bts.backend.domain.constant.Role;
 import org.bts.backend.domain.converter.AuthProviderConverter;
 
 @Entity
@@ -40,6 +37,10 @@ public class Member {
     @Convert(converter = AuthProviderConverter.class)
     @Column(nullable = false)
     private AuthProvider authProvider;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private final List<Role> roles = new ArrayList<>();
 
     // -- 생성자 메서드 -- //
     private Member(String email, String name, String password, AuthProvider authProvider) {
