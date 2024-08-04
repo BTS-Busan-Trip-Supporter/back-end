@@ -13,7 +13,7 @@ public class RefreshToken {
     private String email;
     private String refreshTokenId;
 
-    public RefreshToken of (String email, String refreshTokenId){
+    public static RefreshToken of (String email, String refreshTokenId){
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.email = email;
         refreshToken.refreshTokenId = refreshTokenId;

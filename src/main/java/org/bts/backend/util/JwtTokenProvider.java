@@ -1,7 +1,9 @@
 package org.bts.backend.util;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import io.jsonwebtoken.*;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -10,6 +12,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+
+@Configuration
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
     @Value("${jwt.secret}")
@@ -22,9 +27,9 @@ public class JwtTokenProvider {
     public String fromHeader(String header) {
         return header.replace(JwtPrefix, "");
     }
-    public String createAccessToken(Authentication authentication) {
-        Claims claims = Jwts.claims().setSubject(authentication.getName());
-        claims.put("role", authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+    public String createAccessToken(String email, List<String> roles) {
+        Claims claims = Jwts.claims().setSubject(email);
+        claims.put("role", roles);
 
         Date now = new Date();
         return JwtPrefix + Jwts.builder()
