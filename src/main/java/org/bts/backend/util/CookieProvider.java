@@ -13,7 +13,7 @@ public class CookieProvider {
 
     //  RefreshToken 을 쿠키에 저장.
     public ResponseCookie createRefreshCookie(String refreshToken) {
-        return ResponseCookie.from("refreshToken", refreshToken)
+        return ResponseCookie.from("RefreshToken", refreshToken)
                 .httpOnly(true)
                 .maxAge(Long.parseLong(refreshExpire))
                 .path("/")
@@ -22,7 +22,7 @@ public class CookieProvider {
 
     // 쿠키에 저장된 RefreshToken을 삭제.
     public ResponseCookie deleteRefreshCookie() {
-        return ResponseCookie.from("refreshToken", null)
+        return ResponseCookie.from("RefreshToken", null)
                 .httpOnly(true)
                 .maxAge(0)
                 .path("/")
