@@ -23,6 +23,10 @@ jwt:
   access_expiration: 3600
   refresh_expiration: 86400
 
+redis:
+    host: localhost
+    port: 6379
+
 
 server:
   port: 8080

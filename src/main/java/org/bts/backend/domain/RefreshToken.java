@@ -1,14 +1,15 @@
 package org.bts.backend.domain;
 
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 
 @NoArgsConstructor
-@RedisHash(value = "refreshToken", timeToLive = 60 * 60 * 24 * 7)
+@RedisHash(value = "RefreshToken", timeToLive = 60 * 60 * 24 * 7)
 @Getter
 public class RefreshToken {
+
     @Id
     private String email;
     private String refreshTokenId;

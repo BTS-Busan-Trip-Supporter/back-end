@@ -28,8 +28,6 @@ public class TokenServiceImpl implements TokenService{
         else {
             throw new IllegalArgumentException("해당 이메일을 가진 사용자가 존재하지 않습니다.");
         }
-        // refreshToken 업데이트
-        refreshTokenRepository.save(RefreshToken.of(email, uuid));
     }
 
     // todo: specify error handler
