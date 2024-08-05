@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CookieProvider {
 
-    @Value("${jwt.refresh_expire}")
+    @Value("${jwt.refresh_expiration}")
     private String refreshExpire;
 
     //  RefreshToken 을 쿠키에 저장.
