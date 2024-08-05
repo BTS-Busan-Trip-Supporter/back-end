@@ -201,7 +201,7 @@ gradle-app.setting
 *.hprof
 
 ### YAML File
-
+src/main/resources/application.yaml
 ### Initial Dummy Data
 
 ### Querydsl

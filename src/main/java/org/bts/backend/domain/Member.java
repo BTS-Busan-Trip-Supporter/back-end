@@ -16,7 +16,7 @@ import org.bts.backend.domain.converter.AuthProviderConverter;
 @Table(
     indexes = {
     @Index(columnList = "email", unique = true),
-    @Index(columnList = "password")
+    @Index(columnList = "password") // XXX : password에 인덱스를 거는 이유?
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

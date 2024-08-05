@@ -1,16 +1,23 @@
 package org.bts.backend.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bts.backend.domain.Member;
 import org.bts.backend.domain.constant.AuthProvider;
 import org.bts.backend.dto.response.MemberResponse;
 import org.bts.backend.repository.MemberRepository;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService, UserDetailsService {
 
     private final MemberRepository memberRepository;
 
@@ -32,5 +39,21 @@ public class MemberServiceImpl implements MemberService{
                                .stream()
                                .map(MemberResponse::toResponse)
                                .toList();
+    }
+
+    // 인증시 사용자를 검색하는 메소드.
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Member member = memberRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(member.getRoles().stream().map(Enum::name).toList().toString()));
+
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(member.getEmail())
+                .password(member.getPassword())
+                .authorities(authorities)
+                .build();
     }
 }
