@@ -204,6 +204,9 @@ gradle-app.setting
 src/main/resources/application.yaml
 ### Initial Dummy Data
 
+### Docker
+docker-compose.yml
+
 ### Querydsl
 
 ### JPA Buddy

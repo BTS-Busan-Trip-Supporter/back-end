@@ -1,6 +1,5 @@
 package org.bts.backend.repository;
 
-import org.bts.backend.domain.RefreshToken;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
