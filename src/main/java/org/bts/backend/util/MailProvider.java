@@ -23,32 +23,36 @@ public class MailProvider {
     @Value("${mail.username}")
     private String adminName;
 
-    public void sendMail(String email) throws MessagingException {
+    public void sendMail(String email){
         // 메일 정보 구성.
-        String uuid = UUID.randomUUID().toString();
-        String from = adminName;
-        String to = email;
-        String subject = "BTS 회원가입 인증 메일입니다.";
-        String content = "인증번호는 " + uuid + "입니다.";
+        try {
+            String uuid = UUID.randomUUID().toString();
+            String from = adminName;
+            String to = email;
+            String subject = "BTS 회원가입 인증 메일입니다.";
+            String content = "인증번호는 " + uuid + "입니다.";
 
-        // Redis에 저장
-        mailCertRedisRepository.save(email, uuid);
+            // Redis에 저장
+            mailCertRedisRepository.save(email, uuid);
 
-        // 메일 전송
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-        helper.setFrom(from);
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(content, true);
-        mailSender.send(message);
+            // 메일 전송
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(from);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(content, true);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean checkMail(String email, String uuid) {
         // 인증번호 확인후 레디스값을 ACK로 변경
         if (mailCertRedisRepository.findByEmail(email).isPresent()) {
             if (mailCertRedisRepository.findByEmail(email).get().equals(uuid)) {
-                mailCertRedisRepository.update(email);
+                mailCertRedisRepository.update(email, "ACK");
                 return true;
             }
             else {

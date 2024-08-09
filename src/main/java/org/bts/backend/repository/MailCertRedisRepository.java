@@ -23,8 +23,8 @@ public class MailCertRedisRepository {
         return Optional.ofNullable(redisTemplate.opsForValue().get(email));
     }
 
-    public void update(String email) {
-        redisTemplate.opsForValue().set(email, "ACK");
+    public void update(String email, String uuid) {
+        redisTemplate.opsForValue().set(email, uuid);
     }
     public void delete(String email) {
         redisTemplate.delete(email);

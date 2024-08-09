@@ -6,6 +6,13 @@ import org.bts.backend.dto.response.MemberResponse;
 
 public interface MemberService {
     void saveLocalMember(String name, String email, String password);
+
+    String checkMemberEmail(String email);
+
+    void sendCertMail(String email);
+
+    boolean checkCertMail(String email, String uuid);
+
     void saveSocialMember(String name, String email, AuthProvider authProvider);
 
     // For test

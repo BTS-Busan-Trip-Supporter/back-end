@@ -8,6 +8,7 @@ import org.bts.backend.domain.Member;
 import org.bts.backend.domain.constant.AuthProvider;
 import org.bts.backend.dto.response.MemberResponse;
 import org.bts.backend.repository.MemberRepository;
+import org.bts.backend.util.MailProvider;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,11 +21,35 @@ import org.springframework.stereotype.Service;
 public class MemberServiceImpl implements MemberService, UserDetailsService {
 
     private final MemberRepository memberRepository;
+    private final MailProvider mailProvider;
 
     @Override
     public void saveLocalMember(String name, String email, String password) {
-        Member member = Member.of(email, name, password, AuthProvider.LOCAL);
-        memberRepository.save(member);
+        if (mailProvider.checkAck(email)) {
+            Member member = Member.of(email, name, password, AuthProvider.LOCAL);
+            memberRepository.save(member);
+        }
+        else {
+            throw new IllegalArgumentException("이메일 인증이 완료되지 않았습니다.");
+        }
+    }
+
+    @Override
+    public String checkMemberEmail(String email) {
+        if (memberRepository.existsByEmail(email)) {
+            return "이미 존재하는 이메일입니다.";
+        }
+        return "사용 가능한 이메일입니다.";
+    }
+
+    @Override
+    public void sendCertMail(String email) {
+        mailProvider.sendMail(email);
+    }
+
+    @Override
+    public boolean checkCertMail(String email, String uuid) {
+        return mailProvider.checkMail(email, uuid);
     }
 
     @Override
