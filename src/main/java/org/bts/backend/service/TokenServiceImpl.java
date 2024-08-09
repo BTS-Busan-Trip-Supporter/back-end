@@ -2,7 +2,6 @@ package org.bts.backend.service;
 
 import lombok.RequiredArgsConstructor;
 import org.bts.backend.domain.Member;
-import org.bts.backend.domain.constant.Role;
 import org.bts.backend.dto.response.JwtTokenResponse;
 import org.bts.backend.repository.MemberRepository;
 import org.bts.backend.repository.RefreshTokenRedisRepository;

@@ -11,7 +11,10 @@ public enum Role {
     ROLE_VERIFIED("ROLE_VERIFIED"),
 
     ROLE_USER("ROLE_USER"),
-    ROLE_ADMIN("ROLE_ADMIN");
+    ROLE_ADMIN("ROLE_ADMIN"),
+
+    // 익명
+    ROLE_ANONYMOUS("ROLE_ANONYMOUS");
 
     final String role;
 
