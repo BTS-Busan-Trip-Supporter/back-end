@@ -35,11 +35,11 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
     }
 
     @Override
-    public String checkMemberEmail(String email) {
+    public boolean checkMemberEmail(String email) {
         if (memberRepository.existsByEmail(email)) {
-            return "이미 존재하는 이메일입니다.";
+            return false;
         }
-        return "사용 가능한 이메일입니다.";
+        return true;
     }
 
     @Override
