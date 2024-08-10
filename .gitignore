@@ -202,6 +202,7 @@ gradle-app.setting
 
 ### YAML File
 src/main/resources/application.yaml
+
 ### Initial Dummy Data
 
 ### Docker
@@ -217,3 +218,5 @@ docker-compose.yml
 src/main/resources/*.json
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,intellij+all,java,gradle
+/src/main/resources/application-deploy.yml
+/src/main/resources/application-local.yml
