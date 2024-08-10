@@ -20,7 +20,7 @@ public class MailProvider {
     // 회원가입시에 Redis 확인.
     private final JavaMailSender mailSender;
     private final MailCertRedisRepository mailCertRedisRepository;
-    @Value("${mail.username}")
+    @Value("${spring.mail.username}")
     private String adminName;
 
     public void sendMail(String email){
@@ -30,7 +30,7 @@ public class MailProvider {
             String from = adminName;
             String to = email;
             String subject = "BTS 회원가입 인증 메일입니다.";
-            String content = "인증번호는 " + uuid + "입니다.";
+            String content = createHtmlContent(uuid);
 
             // Redis에 저장
             mailCertRedisRepository.save(email, uuid);
@@ -75,4 +75,45 @@ public class MailProvider {
         }
         return false;
     }
+    private String createHtmlContent(String uuid) {
+        return "<!DOCTYPE html>" +
+                "<html lang='ko'>" +
+                "<head>" +
+                "<meta charset='UTF-8'>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "<title>인증 이메일</title>" +
+                "<style>" +
+                "body {font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;}" +
+                ".container {width: 100%; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);}" +
+                ".header {background-color: #007bff; color: #ffffff; padding: 20px; text-align: center;}" +
+                ".header h1 {margin: 0; font-size: 24px;}" +
+                ".body {padding: 20px;}" +
+                ".body p {font-size: 16px; line-height: 1.5;}" +
+                ".code {font-size: 18px; font-weight: bold; color: #007bff; padding: 10px; border: 1px solid #007bff; border-radius: 4px; display: inline-block; margin: 10px 0;}" +
+                ".footer {background-color: #f1f1f1; color: #666666; text-align: center; padding: 10px; font-size: 14px;}" +
+                ".footer p {margin: 0;}" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div class='container'>" +
+                "<div class='header'>" +
+                "<h1>Busan-Trip-Supporter (BTS)</h1>" +
+                "</div>" +
+                "<div class='body'>" +
+                "<p>안녕하세요!</p>" +
+                "<p>이메일 인증을 위해 아래 인증번호를 입력해 주세요:</p>" +
+                "<div class='code'>" +
+                "인증번호: " + uuid +
+                "</div>" +
+                "<p>위 인증번호를 입력하셔야만 인증이 완료됩니다. 인증번호는 10분간 유효합니다.</p>" +
+                "<p>감사합니다!</p>" +
+                "</div>" +
+                "<div class='footer'>" +
+                "<p>&copy; 2024 Busan-Trip-Supporter. All rights reserved.</p>" +
+                "</div>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+    }
+
 }

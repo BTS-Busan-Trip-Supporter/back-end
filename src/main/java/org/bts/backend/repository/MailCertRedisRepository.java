@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Repository
 public class MailCertRedisRepository {
@@ -15,7 +16,8 @@ public class MailCertRedisRepository {
     }
 
     public void save(String email, String uuid) {
-        redisTemplate.opsForValue().set(email, uuid);
+        System.out.println("email : " + email + " uuid : " + uuid);
+        redisTemplate.opsForValue().set(email, uuid, 60, TimeUnit.SECONDS);
     }
 
     public Optional<String> findByEmail(String email) {
@@ -23,7 +25,7 @@ public class MailCertRedisRepository {
     }
 
     public void update(String email, String uuid) {
-        redisTemplate.opsForValue().set(email, uuid);
+        redisTemplate.opsForValue().set(email, uuid, 60, TimeUnit.SECONDS);
     }
     public void delete(String email) {
         redisTemplate.delete(email);

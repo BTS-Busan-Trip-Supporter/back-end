@@ -2,6 +2,7 @@ package org.bts.backend.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.bts.backend.dto.request.MailCertRequest;
 import org.bts.backend.dto.request.MemberRequest;
 import org.bts.backend.dto.response.ApiResponse;
 import org.bts.backend.dto.response.MemberResponse;
@@ -29,15 +30,15 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.success(result));
     }
     // 메일인증 전송요청
-    @PostMapping("/send/mail")
-    public void sendCertMail(@RequestBody String email) {
+    @GetMapping("/send/mail/{email}")
+    public void sendCertMail(@PathVariable String email) {
         memberService.sendCertMail(email);
     }
 
     // 메일인증 확인
     @PostMapping("/check/mail")
-    public ResponseEntity<ApiResponse<Boolean>> checkCertMail(@RequestBody MemberRequest request) {
-        boolean result = memberService.checkCertMail(request.email(), request.password());
+    public ResponseEntity<ApiResponse<Boolean>> checkCertMail(@RequestBody MailCertRequest request) {
+        boolean result = memberService.checkCertMail(request.email(), request.uuid());
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
