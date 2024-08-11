@@ -51,7 +51,7 @@ public class TokenServiceImpl implements TokenService{
         // 토큰 갱신
         List<String> roles = jwtTokenProvider.getRole(accessToken);
         String newAccessToken = jwtTokenProvider.createAccessToken(member.getEmail(), roles);
-        return new JwtTokenResponse(newAccessToken, refreshToken);
+        return JwtTokenResponse.toResponse(newAccessToken, refreshToken);
     }
 
     @Override
@@ -66,6 +66,5 @@ public class TokenServiceImpl implements TokenService{
         );
         // 토큰 삭제
         refreshTokenRepository.delete(refreshTokenEntity);
-
     }
 }
