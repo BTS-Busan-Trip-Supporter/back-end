@@ -13,7 +13,7 @@ public interface MemberService {
 
     boolean checkCertMail(String email, String uuid);
 
-    void saveSocialMember(String name, String email, AuthProvider authProvider);
+//    void saveSocialMember(String name, String email, AuthProvider authProvider);
 
     // For test
     List<MemberResponse> findAllMember();

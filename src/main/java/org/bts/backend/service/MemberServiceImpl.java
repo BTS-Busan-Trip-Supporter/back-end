@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bts.backend.domain.Member;
 import org.bts.backend.domain.constant.AuthProvider;
+import org.bts.backend.domain.constant.Role;
 import org.bts.backend.dto.response.MemberResponse;
 import org.bts.backend.repository.MemberRepository;
 import org.bts.backend.util.MailProvider;
@@ -26,7 +27,8 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
     @Override
     public void saveLocalMember(String name, String email, String password) {
         if (mailProvider.checkAck(email)) {
-            Member member = Member.of(email, name, password, AuthProvider.LOCAL);
+            List<Role> roles = List.of(Role.ROLE_USER, Role.ROLE_VERIFIED);
+            Member member = Member.of(email, name, password, AuthProvider.LOCAL, roles);
             memberRepository.save(member);
         }
         else {
@@ -36,10 +38,7 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 
     @Override
     public boolean checkMemberEmail(String email) {
-        if (memberRepository.existsByEmail(email)) {
-            return false;
-        }
-        return true;
+        return !memberRepository.existsByEmail(email);
     }
 
     @Override
@@ -52,11 +51,11 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
         return mailProvider.checkMail(email, uuid);
     }
 
-    @Override
-    public void saveSocialMember(String name, String email, AuthProvider authProvider) {
-        Member member = Member.of(email, name, null, authProvider);
-        memberRepository.save(member);
-    }
+//    @Override
+//    public void saveSocialMember(String name, String email, AuthProvider authProvider) {
+//        Member member = Member.of(email, name, null, authProvider);
+//        memberRepository.save(member);
+//    }
 
     @Override
     public List<MemberResponse> findAllMember() {
@@ -73,8 +72,9 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(member.getRoles().stream().map(Enum::name).toList().toString()));
-
+        for (Role role : member.getRoles()) {
+            authorities.add(new SimpleGrantedAuthority(role.name()));
+        }
         return org.springframework.security.core.userdetails.User.builder()
                 .username(member.getEmail())
                 .password(member.getPassword())

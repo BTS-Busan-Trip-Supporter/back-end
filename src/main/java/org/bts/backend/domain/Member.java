@@ -43,20 +43,22 @@ public class Member {
     private final List<Role> roles = new ArrayList<>();
 
     // -- 생성자 메서드 -- //
-    private Member(String email, String name, String password, AuthProvider authProvider) {
+    private Member(String email, String name, String password, AuthProvider authProvider, List<Role> roles) {
         this.email = email;
         this.name = name;
         this.password = password;
         this.authProvider = authProvider;
+        this.roles.addAll(roles);
     }
 
     public static Member of(
         String email,
         String name,
         String password,
-        AuthProvider authProvider
+        AuthProvider authProvider,
+        List<Role> roles
     ) {
-        return new Member(email, name, password, authProvider);
+        return new Member(email, name, password, authProvider, roles);
     }
 
     // -- 비지니스 로직 (검증, setter) -- //

@@ -2,8 +2,10 @@ package org.bts.backend.config;
 
 import lombok.RequiredArgsConstructor;
 import org.bts.backend.auth_filter.AuthenticationFilter;
+import org.bts.backend.auth_filter.AuthorizationFilter;
 import org.bts.backend.util.CookieProvider;
 import org.bts.backend.util.JwtTokenProvider;
+import org.bts.backend.util.OauthUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
@@ -22,14 +25,16 @@ public class SecurityConfig {
     private final AuthenticationManager authenticationManager;
     private final CookieProvider cookieProvider;
     private final JwtTokenProvider jwtTokenProvider;
+    private final OauthUtil oauthUtil;
 
-    // TODO: 패스워드 인코딩 전략 정해서 빈으로 등록시킬 것
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // 인증 필터 생성 및 의존성 주입
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager, cookieProvider, jwtTokenProvider);
         // 로그인 URL 설정
         authenticationFilter.setFilterProcessesUrl("/login");
+        AuthorizationFilter AuthorizationFilter = new AuthorizationFilter(jwtTokenProvider);
+
         // 필터 체인 객체 생성
         http
                 // csrf 비활성화
@@ -41,13 +46,23 @@ public class SecurityConfig {
                 // 세션을 사용하지 않도록 설정
                 .sessionManagement(sessionManagement ->
                                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 로그인 설정 비활성화 -> OAuth2 로그인 사용
+                .formLogin(AbstractHttpConfigurer::disable)
                 // 로그아웃 설정(쿠키 삭제)
                 .logout((logout) -> logout.logoutUrl("/logout")
                         .deleteCookies("RefreshToken"))
-                // 인증 필터 추가
-                .addFilter(authenticationFilter)
+                // OAuth2 로그인 설정
+                .oauth2Login(oauth ->
+                        oauth.userInfoEndpoint(userInfo -> userInfo
+                                .userService(oauthUtil))
+                        .failureHandler(oauthUtil::oauthFailureHandler)
+                        .successHandler(oauthUtil::oauthSuccessHandler))
                 // CORS 필터 추가
-                .addFilter(corsFilter);
+                .addFilter(corsFilter)
+                // 인증 필터 추가
+                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                // 인가 필터 추가
+                .addFilterAfter(AuthorizationFilter, AuthenticationFilter.class);
         return http.build();
     }
 }

@@ -34,6 +34,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         try {
             // request의 body에서 email, password를 읽어옴
             LoginRequest loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequest.class);
+
             // AuthenticationManager를 통해 Authentication 객체를 생성
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
