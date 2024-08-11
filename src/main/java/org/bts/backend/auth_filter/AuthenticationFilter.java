@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.bts.backend.dto.request.LoginRequest;
+import org.bts.backend.service.TokenService;
 import org.bts.backend.util.CookieProvider;
 import org.bts.backend.util.JwtTokenProvider;
 import org.springframework.http.ResponseCookie;
@@ -25,6 +26,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final CookieProvider cookieProvider;
     private final JwtTokenProvider jwtTokenProvider;
+    private final TokenService tokenService;
 
     // todo: specify error handler
     // 인증 시도, HTTPRequest, HTTPResponse를 받아서 인증을 시도하는 메소드
@@ -61,6 +63,9 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         // email을 이용해 AccessToken, RefreshToken을 생성
         String accessToken = jwtTokenProvider.createAccessToken(email, roles);
         String refreshToken = jwtTokenProvider.createRefreshToken();
+
+        // RefreshToken을 Redis에 저장
+        tokenService.updateRefreshToken(email, refreshToken);
 
         // RefreshToken을 쿠키에 저장
         ResponseCookie refreshCookie = cookieProvider.createRefreshCookie(refreshToken);

@@ -66,7 +66,7 @@ public class OauthUtil implements OAuth2UserService<OAuth2UserRequest, OAuth2Use
         if(!memberRepository.existsByEmail(member.getEmail())) {
             memberRepository.save(member);
         }
-
+        // member의 Role 을 이용해 authorities를 구성.
         Collection<? extends GrantedAuthority> authorities = memberService.loadUserByUsername(member.getEmail()).getAuthorities();
         return new DefaultOAuth2User(authorities, oAuthAttributeDto.getAttributes(), userNameAttributeName);
     }

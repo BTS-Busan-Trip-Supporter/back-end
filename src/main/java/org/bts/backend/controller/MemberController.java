@@ -8,6 +8,9 @@ import org.bts.backend.dto.response.ApiResponse;
 import org.bts.backend.dto.response.MemberResponse;
 import org.bts.backend.service.MemberService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 // TODO: Swagger를 이용하여 API 문서화.
@@ -16,10 +19,11 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/register/member/local")
     public ResponseEntity<ApiResponse<String>> registerLocalMember(@RequestBody MemberRequest request) {
-        memberService.saveLocalMember(request.name(), request.email(), request.password());
+        memberService.saveLocalMember(request.name(), request.email(), passwordEncoder.encode(request.password()));
         return ResponseEntity.ok(ApiResponse.success("회원가입이 완료되었습니다."));
     }
 

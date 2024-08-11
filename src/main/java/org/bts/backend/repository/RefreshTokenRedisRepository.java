@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Repository
 public class RefreshTokenRedisRepository {
@@ -15,8 +16,9 @@ public class RefreshTokenRedisRepository {
         this.redisTemplate = redisTemplate;
     }
 
+    // 시간제한 10분
     public void save(RefreshToken refreshToken) {
-        redisTemplate.opsForValue().set(refreshToken.getEmail(), refreshToken);
+        redisTemplate.opsForValue().set(refreshToken.getEmail(), refreshToken, 600, TimeUnit.SECONDS);
     }
 
     public Optional<RefreshToken> findById(String email) {

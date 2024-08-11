@@ -3,6 +3,7 @@ package org.bts.backend.config;
 import lombok.RequiredArgsConstructor;
 import org.bts.backend.auth_filter.AuthenticationFilter;
 import org.bts.backend.auth_filter.AuthorizationFilter;
+import org.bts.backend.service.TokenService;
 import org.bts.backend.util.CookieProvider;
 import org.bts.backend.util.JwtTokenProvider;
 import org.bts.backend.util.OauthUtil;
@@ -26,11 +27,12 @@ public class SecurityConfig {
     private final CookieProvider cookieProvider;
     private final JwtTokenProvider jwtTokenProvider;
     private final OauthUtil oauthUtil;
+    private final TokenService tokenService;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // 인증 필터 생성 및 의존성 주입
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager, cookieProvider, jwtTokenProvider);
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager, cookieProvider, jwtTokenProvider,tokenService);
         // 로그인 URL 설정
         authenticationFilter.setFilterProcessesUrl("/login");
         AuthorizationFilter AuthorizationFilter = new AuthorizationFilter(jwtTokenProvider);
