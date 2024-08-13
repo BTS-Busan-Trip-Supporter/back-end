@@ -1,25 +1,22 @@
 package org.bts.backend.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bts.backend.domain.constant.AuthProvider;
+import org.bts.backend.domain.constant.Role;
 import org.bts.backend.domain.converter.AuthProviderConverter;
 
 @Entity
 @Table(
     indexes = {
     @Index(columnList = "email", unique = true),
-    @Index(columnList = "password")
+    @Index(columnList = "password") // XXX : password에 인덱스를 거는 이유?
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,21 +38,27 @@ public class Member {
     @Column(nullable = false)
     private AuthProvider authProvider;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private final List<Role> roles = new ArrayList<>();
+
     // -- 생성자 메서드 -- //
-    private Member(String email, String name, String password, AuthProvider authProvider) {
+    private Member(String email, String name, String password, AuthProvider authProvider, List<Role> roles) {
         this.email = email;
         this.name = name;
         this.password = password;
         this.authProvider = authProvider;
+        this.roles.addAll(roles);
     }
 
     public static Member of(
         String email,
         String name,
         String password,
-        AuthProvider authProvider
+        AuthProvider authProvider,
+        List<Role> roles
     ) {
-        return new Member(email, name, password, authProvider);
+        return new Member(email, name, password, authProvider, roles);
     }
 
     // -- 비지니스 로직 (검증, setter) -- //
