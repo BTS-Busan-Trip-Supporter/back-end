@@ -1,6 +1,9 @@
 package org.bts.backend.controller;
 
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.bts.backend.dto.request.MailCertRequest;
 import org.bts.backend.dto.request.MemberRequest;
@@ -27,6 +30,7 @@ public class MemberController {
     private final TokenService tokenService;
 
     @PostMapping("/register/member/local")
+    @Operation(summary = "회원가입", description = "회원가입을 진행합니다.")
     public ResponseEntity<ApiResponse<String>> registerLocalMember(@RequestBody MemberRequest request) {
         memberService.saveLocalMember(request.name(), request.email(), passwordEncoder.encode(request.password()));
         return ResponseEntity.ok(ApiResponse.success("회원가입이 완료되었습니다."));
@@ -34,18 +38,21 @@ public class MemberController {
 
     // 중복검사
     @GetMapping("/duplicate/email/{email}")
+    @Operation(summary = "이메일 중복검사", description = "이메일 중복검사를 진행합니다.")
     public ResponseEntity<ApiResponse<Boolean>> checkMemberEmail(@PathVariable String email) {
         boolean result = memberService.checkMemberEmail(email);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
     // 메일인증 전송요청
     @GetMapping("/send/mail/{email}")
+    @Operation(summary = "메일인증 전송", description = "메일인증을 위한 이메일을 전송합니다.")
     public void sendCertMail(@PathVariable String email) {
         memberService.sendCertMail(email);
     }
 
     // 메일인증 확인
     @PostMapping("/check/mail")
+    @Operation(summary = "메일인증 확인", description = "메일인증을 확인합니다.")
     public ResponseEntity<ApiResponse<Boolean>> checkCertMail(@RequestBody MailCertRequest request) {
         boolean result = memberService.checkCertMail(request.email(), request.uuid());
         return ResponseEntity.ok(ApiResponse.success(result));
@@ -53,12 +60,14 @@ public class MemberController {
 
 
     @GetMapping("/members")
+    @Operation(summary = "모든 회원 조회", description = "모든 회원을 조회합니다.")
     public ResponseEntity<ApiResponse<List<MemberResponse>>> searchAllMember() {
         List<MemberResponse> allMember = memberService.findAllMember();
         return ResponseEntity.ok(ApiResponse.success(allMember));
     }
 
     @GetMapping("/logout")
+    @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
     public ResponseEntity<ApiResponse<String>> logout(@RequestHeader("Authorization") String accessToken){
         // 레디스에 있는 RefreshToken 삭제
         tokenService.logout(accessToken);
@@ -73,6 +82,7 @@ public class MemberController {
     }
 
     @GetMapping("/reissue")
+    @Operation(summary = "AccessToken 재발급", description = "AccessToken을 재발급합니다.")
     public ResponseEntity<ApiResponse<?>> reissue(@RequestHeader("Authorization") String accessToken,
                                                         @CookieValue("RefreshToken") String refreshToken){
         // RefreshToken으로 AccessToken 재발급
