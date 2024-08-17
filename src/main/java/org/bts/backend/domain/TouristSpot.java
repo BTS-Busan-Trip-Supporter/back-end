@@ -22,17 +22,21 @@ public class TouristSpot {
     @Column(name = "content_type_id", nullable = false)
     private String typeId; // API에서 받아온 content_type_id
 
+    @Column(nullable = false)
+    private String title; // 관광지명
+
     @ColumnDefault("0")
     private Long likeCount;
 
     // -- 생성자 메서드 -- //
-    private TouristSpot(String id, String typeId) {
+    private TouristSpot(String id, String typeId, String title) {
         this.id = id;
         this.typeId = typeId;
+        this.title = title;
     }
 
-    private static TouristSpot of(String id, String typeId) {
-        return new TouristSpot(id, typeId);
+    private static TouristSpot of(String id, String typeId, String title) {
+        return new TouristSpot(id, typeId, title);
     }
 
     // -- setter 메서드 -- //
