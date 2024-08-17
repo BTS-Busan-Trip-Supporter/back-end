@@ -3,4 +3,4 @@ CMD ["./gradlew", "clean", "build"]
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} bts.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/bts.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=deploy", "-jar", "/bts.jar"]
