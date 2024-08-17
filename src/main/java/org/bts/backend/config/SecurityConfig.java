@@ -1,8 +1,10 @@
 package org.bts.backend.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.bts.backend.auth_filter.AuthenticationFilter;
 import org.bts.backend.auth_filter.AuthorizationFilter;
+import org.bts.backend.exception.FilterExceptionHandler;
 import org.bts.backend.service.TokenService;
 import org.bts.backend.util.CookieProvider;
 import org.bts.backend.util.JwtTokenProvider;
@@ -39,6 +41,7 @@ public class SecurityConfig {
 
         // 필터 체인 객체 생성
         http
+                .addFilterBefore(new FilterExceptionHandler(new ObjectMapper()), CorsFilter.class)
                 // csrf 비활성화
                 .csrf(AbstractHttpConfigurer::disable)
                 // 우선 모든 요청에 대해 허용하도록 설정
