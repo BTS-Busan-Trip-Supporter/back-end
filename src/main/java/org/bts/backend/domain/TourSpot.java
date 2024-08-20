@@ -3,6 +3,7 @@ package org.bts.backend.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,8 +26,12 @@ public class TourSpot {
     @Column(nullable = false)
     private String title; // 관광지명
 
-    @ColumnDefault("0")
+    @ColumnDefault("1")
     private Long likeCount;
+
+    @ColumnDefault("1")
+    private Long dislikeCount;
+
 
     // -- 생성자 메서드 -- //
     private TourSpot(String id, String typeId, String title) {
