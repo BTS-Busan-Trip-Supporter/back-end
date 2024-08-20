@@ -22,22 +22,22 @@ public class TourActivity extends StartEndTimeEntity {
     // TODO: 이미지 데이터
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tourist_spot_id", nullable = false)
-    private TouristSpot touristSpot;
+    @JoinColumn(name = "tour_spot_id", nullable = false)
+    private TourSpot tourSpot;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_day_id", nullable = false)
     private TourDay tourDay;
 
     // -- 생성자 메서드 -- //
-    private TourActivity(String spotName, TouristSpot touristSpot, TourDay tourDay) {
+    private TourActivity(String spotName, TourSpot tourSpot, TourDay tourDay) {
         this.spotName = spotName;
-        this.touristSpot = touristSpot;
+        this.tourSpot = tourSpot;
         this.tourDay = tourDay;
     }
 
-    public static TourActivity of(String spotName, TouristSpot touristSpot, TourDay tourDay) {
-        return new TourActivity(spotName, touristSpot, tourDay);
+    public static TourActivity of(String spotName, TourSpot tourSpot, TourDay tourDay) {
+        return new TourActivity(spotName, tourSpot, tourDay);
     }
 
     // -- setter 메서드 -- //
