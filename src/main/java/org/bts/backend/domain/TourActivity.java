@@ -1,6 +1,7 @@
 package org.bts.backend.domain;
 
 import jakarta.persistence.*;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,13 +42,24 @@ public class TourActivity extends StartEndTimeEntity {
     }
 
     // -- setter 메서드 -- //
-    public void toggleRecommend() {
-        if (this.recommend == null) {
-            this.recommend = true;
+    public void updateRecommend(boolean state) {
+        if(Objects.equals(recommend, state)) {
             return;
         }
 
-        this.recommend = !this.recommend;
+        if(state) {
+            tourSpot.increaseLikeCount();
+            if(recommend != null) {
+                tourSpot.decreaseDislikeCount();
+            }
+        } else {
+            tourSpot.increaseDislikeCount();
+            if(recommend != null) {
+                tourSpot.decreaseLikeCount();
+            }
+        }
+
+        recommend = state;
     }
 
 }

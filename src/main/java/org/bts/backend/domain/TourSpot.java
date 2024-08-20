@@ -50,11 +50,23 @@ public class TourSpot {
     }
 
     public void decreaseLikeCount() {
-        if (this.likeCount <= 0) {
-            this.likeCount = 0L;
+        if (this.likeCount <= 1) {
+            this.likeCount = 1L;
             return;
         }
         this.likeCount -= 1;
+    }
+
+    public void increaseDislikeCount() {
+        this.dislikeCount += 1;
+    }
+
+    public void decreaseDislikeCount() {
+        if(this.dislikeCount <= 1) {
+            this.dislikeCount = 1L;
+            return;
+        }
+        this.dislikeCount -= 1;
     }
 
     // redis로 좋아요 수 관리할 경우 사용
