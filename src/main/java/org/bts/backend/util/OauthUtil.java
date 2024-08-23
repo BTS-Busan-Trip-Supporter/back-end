@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.bts.backend.domain.Member;
 import org.bts.backend.domain.constant.AuthProvider;
 import org.bts.backend.dto.OAuthAttributeDto;
+import org.bts.backend.exception.before_servlet.CustomAuthException;
+import org.bts.backend.exception.before_servlet.CustomIOException;
 import org.bts.backend.repository.MemberRepository;
 import org.bts.backend.service.MemberServiceImpl;
 import org.bts.backend.service.TokenService;
@@ -71,7 +73,7 @@ public class OauthUtil implements OAuth2UserService<OAuth2UserRequest, OAuth2Use
         return new DefaultOAuth2User(authorities, oAuthAttributeDto.getAttributes(), userNameAttributeName);
     }
 
-    public void oauthSuccessHandler(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException{
+    public void oauthSuccessHandler(HttpServletRequest request, HttpServletResponse response, Authentication authentication){
 
         // 받아온 Authentication을 OAuth2AuthenticationToken으로 캐스팅
         // 그 후에 provider 추출.
@@ -98,14 +100,23 @@ public class OauthUtil implements OAuth2UserService<OAuth2UserRequest, OAuth2Use
         String accessToken = jwtTokenProvider.createAccessToken(email, roles);
         response.addHeader("Authorization", accessToken);
 
-        // 리다이렉트
-        response.sendRedirect("http://localhost:8080/login/oauth2/success?accessToken="+accessToken);
+        try {
+            // 리다이렉트
+            response.sendRedirect("http://localhost:8080/login/oauth2/success?accessToken="+accessToken);
+        }
+        catch (IOException e) {
+            throw new CustomAuthException();
+        }
 
     }
 
     // 실패시 로그인 페이지로 리다이렉트.
-    public void oauthFailureHandler(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
+    public void oauthFailureHandler(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception){
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.sendRedirect("http://localhost:8080");
+        try {
+            response.sendRedirect("http://localhost:8080/login/oauth2/failure");
+        } catch (IOException e) {
+            throw new CustomIOException(exception.getMessage());
+        }
     }
 }

@@ -2,11 +2,12 @@ package org.bts.backend.auth_filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.bts.backend.dto.request.LoginRequest;
+import org.bts.backend.dto.response.ApiResponse;
+import org.bts.backend.exception.before_servlet.CustomIOException;
 import org.bts.backend.service.TokenService;
 import org.bts.backend.util.CookieProvider;
 import org.bts.backend.util.JwtTokenProvider;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -27,11 +29,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final CookieProvider cookieProvider;
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenService tokenService;
+    private final ObjectMapper objectMapper;
 
     // todo: specify error handler
     // 인증 시도, HTTPRequest, HTTPResponse를 받아서 인증을 시도하는 메소드
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException{
         Authentication authentication;
         try {
             // request의 body에서 email, password를 읽어옴
@@ -44,14 +47,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                             loginRequest.password())
             );
         } catch (IOException e) {
-            throw new IllegalArgumentException("로그인 정보를 읽어오는데 실패했습니다.");
+            throw new CustomIOException();
         }
         return authentication;
     }
 
     // 인증(attemptAuthentication) 성공 시 실행되는 메소드
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult){
         // Authentication 객체에서 email을 추출
         String email = authResult.getName();
 
@@ -73,5 +76,28 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         // AccessToken을 Response Header에 저장
         response.addHeader("Authorization", accessToken);
+        // Response Body에 로그인 성공 메시지 반환
+        response.setStatus(response.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        try {
+            response.getWriter().write(objectMapper.writeValueAsString(ApiResponse.success("로그인 성공")));
+        } catch (IOException e) {
+            throw new CustomIOException();
+        }
+    }
+
+    // AuthenticationException 을 트리거로 하는 에러 메시지 반환
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        try {
+            // 로그인 실패 메시지 반환
+            response.getWriter().write(objectMapper.writeValueAsString(ApiResponse.fail("로그인 실패")));
+        } catch (IOException e) {
+            throw new CustomIOException();
+        }
     }
 }
