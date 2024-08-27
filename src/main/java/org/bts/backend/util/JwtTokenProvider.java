@@ -1,6 +1,7 @@
 package org.bts.backend.util;
 
 import lombok.RequiredArgsConstructor;
+import org.bts.backend.exception.before_servlet.CustomTokenException;
 import org.springframework.beans.factory.annotation.Value;
 import io.jsonwebtoken.*;
 import org.springframework.context.annotation.Configuration;
@@ -96,19 +97,19 @@ public class JwtTokenProvider {
             return true;
         }
         catch (SignatureException e) {
-            throw new IllegalArgumentException("Invalid JWT signature");
+            throw new CustomTokenException("유효하지 않은 JWT 서명입니다.");
         }
         catch (MalformedJwtException e) {
-            throw new IllegalArgumentException("Invalid JWT token");
+            throw new CustomTokenException("유효하지 않은 JWT 토큰입니다.");
         }
         catch (ExpiredJwtException e) {
-            throw new IllegalArgumentException("Expired JWT token");
+            throw new CustomTokenException("만료된 JWT 토큰입니다.");
         }
         catch (UnsupportedJwtException e) {
-            throw new IllegalArgumentException("Unsupported JWT token");
+            throw new CustomTokenException("지원되지 않는 JWT 토큰입니다.");
         }
         catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("JWT claims string is empty.");
+            throw new CustomTokenException("JWT 토큰이 비어있습니다.");
         }
     }
 }

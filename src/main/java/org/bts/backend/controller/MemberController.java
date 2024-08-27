@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-// TODO: Swagger를 이용하여 API 문서화.
 @RestController
 @RequiredArgsConstructor
 public class MemberController {

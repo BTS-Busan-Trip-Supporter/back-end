@@ -3,6 +3,8 @@ package org.bts.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.bts.backend.domain.Member;
 import org.bts.backend.dto.response.JwtTokenResponse;
+import org.bts.backend.exception.before_servlet.CustomTokenException;
+import org.bts.backend.exception.after_servlet.UsernameNotFoundException;
 import org.bts.backend.repository.MemberRepository;
 import org.bts.backend.repository.RefreshTokenRedisRepository;
 import org.bts.backend.util.JwtTokenProvider;
@@ -25,7 +27,7 @@ public class TokenServiceImpl implements TokenService{
         if(memberRepository.existsByEmail(email))
             refreshTokenRepository.save(RefreshToken.of(email, uuid));
         else {
-            throw new IllegalArgumentException("해당 이메일을 가진 사용자가 존재하지 않습니다.");
+            throw new UsernameNotFoundException("해당 이메일을 가진 사용자가 존재하지 않습니다.");
         }
     }
 
@@ -34,19 +36,18 @@ public class TokenServiceImpl implements TokenService{
     public JwtTokenResponse updateAccessToken(String accessToken, String refreshToken) {
         // 사용자 체크
         Member member = memberRepository.findByEmail(jwtTokenProvider.getEmailForAccessToken(accessToken)).orElseThrow(
-                () -> new IllegalArgumentException("해당 이메일을 가진 사용자가 존재하지 않습니다.")
+                () -> new UsernameNotFoundException("해당 이메일을 가진 사용자가 존재하지 않습니다.")
         );
         // 토큰 존재여부 체크
         RefreshToken refreshTokenEntity = refreshTokenRepository.findById(member.getEmail()).orElseThrow(
-                () -> new IllegalArgumentException("해당 이메일을 가진 사용자의 RefreshToken이 존재하지 않습니다.")
+                () -> new CustomTokenException("해당 이메일을 가진 사용자의 RefreshToken이 존재하지 않습니다.")
         );
         // 토큰 유효여부 체크
-        if(!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new IllegalArgumentException("RefreshToken이 유효하지 않습니다.");
-        }
+        jwtTokenProvider.validateToken(refreshToken);
+
         // 토큰 동일여부 체크
         if(!jwtTokenProvider.sameRefreshToken(refreshToken, refreshTokenEntity.getRefreshTokenId())) {
-            throw new IllegalArgumentException("RefreshToken이 일치하지 않습니다.");
+            throw new CustomTokenException("RefreshToken이 일치하지 않습니다.");
         }
         // 토큰 갱신
         List<String> roles = jwtTokenProvider.getRole(accessToken);
@@ -58,11 +59,11 @@ public class TokenServiceImpl implements TokenService{
     public void logout(String accessToken) {
         // 토큰 유효여부 체크
         if (!jwtTokenProvider.validateToken(accessToken)) {
-            throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
+            throw new CustomTokenException("토큰이 유효하지 않습니다.");
         }
         // 사용자 체크 및 refreshToken 존재여부 체크
         RefreshToken refreshTokenEntity = refreshTokenRepository.findById(jwtTokenProvider.getEmailForAccessToken(accessToken)).orElseThrow(
-                () -> new IllegalArgumentException("해당 이메일을 가진 사용자의 RefreshToken이 존재하지 않습니다.")
+                () -> new CustomTokenException("해당 이메일을 가진 사용자의 RefreshToken이 존재하지 않습니다.")
         );
         // 토큰 삭제
         refreshTokenRepository.delete(refreshTokenEntity);

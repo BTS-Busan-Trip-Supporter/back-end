@@ -1,11 +1,11 @@
 package org.bts.backend.util;
 
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 
 import org.bts.backend.repository.MailCertRedisRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.bts.backend.exception.after_servlet.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -20,9 +20,9 @@ public class MailProvider {
     // 회원가입시에 Redis 확인.
     private final JavaMailSender mailSender;
     private final MailCertRedisRepository mailCertRedisRepository;
+
     @Value("${spring.mail.username}")
     private String adminName;
-
     public void sendMail(String email){
         // 메일 정보 구성.
         try {
@@ -43,8 +43,9 @@ public class MailProvider {
             helper.setSubject(subject);
             helper.setText(content, true);
             mailSender.send(message);
-        } catch (MessagingException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new MailException() {
+            };
         }
     }
 

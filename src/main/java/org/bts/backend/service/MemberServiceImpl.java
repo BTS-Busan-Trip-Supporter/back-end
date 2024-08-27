@@ -8,13 +8,14 @@ import org.bts.backend.domain.Member;
 import org.bts.backend.domain.constant.AuthProvider;
 import org.bts.backend.domain.constant.Role;
 import org.bts.backend.dto.response.MemberResponse;
+import org.bts.backend.exception.after_servlet.NoCredException;
+import org.bts.backend.exception.after_servlet.UsernameNotFoundException;
 import org.bts.backend.repository.MemberRepository;
 import org.bts.backend.util.MailProvider;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,7 +33,7 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
             memberRepository.save(member);
         }
         else {
-            throw new IllegalArgumentException("이메일 인증이 완료되지 않았습니다.");
+            throw new NoCredException();
         }
     }
 
@@ -51,12 +52,6 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
         return mailProvider.checkMail(email, uuid);
     }
 
-//    @Override
-//    public void saveSocialMember(String name, String email, AuthProvider authProvider) {
-//        Member member = Member.of(email, name, null, authProvider);
-//        memberRepository.save(member);
-//    }
-
     @Override
     public List<MemberResponse> findAllMember() {
         return memberRepository.findAll()
@@ -69,7 +64,7 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(UsernameNotFoundException::new);
 
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         for (Role role : member.getRoles()) {
