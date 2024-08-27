@@ -7,6 +7,8 @@ import lombok.Setter;
 import java.util.List;
 
 // Tmap 처리를 위한 POJO
+@Getter
+@Setter
 public class TmapResponse {
 
     // MetaData -> RequestParameters, Plan
