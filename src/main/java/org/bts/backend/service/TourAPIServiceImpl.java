@@ -1,7 +1,9 @@
 package org.bts.backend.service;
 
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.bts.backend.dto.response.tourapi.LocationBasedResponse;
+import org.bts.backend.util.TourAPIQueryParams;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -35,23 +37,33 @@ public class TourAPIServiceImpl implements TourAPIService {
                 .build();
     }
 
-    public Mono<LocationBasedResponse> getLocationBasedResponse() {
+    public Mono<LocationBasedResponse> getLocationBasedResponse(
+        String mapX,
+        String mapY,
+        String radius,
+        Map<String, String> additionalParams
+    ) {
         WebClient webClient = getTourApiClient();
 
         return webClient.get()
-            .uri(uriBuilder -> uriBuilder
-                .scheme("https")
-                .host(host)
-                .path(basePath + "/locationBasedList1")
-                .queryParam("MobileOS", "ETC")
-                .queryParam("MobileApp", "MobileApp")
-                .queryParam("_type", "json")
-                .queryParam("mapX", "128.878492")
-                .queryParam("mapY", "37.74913611")
-                .queryParam("radius", "1000")
-                .queryParam("serviceKey", serviceKey)
-                .build()
-            )
+            .uri(uriBuilder -> {
+                uriBuilder
+                    .scheme("https")
+                    .host(host)
+                    .path(basePath + "/locationBasedList1");
+                // 기본적인 쿼리 파라미터 값 추가
+                TourAPIQueryParams.addCommonParams(serviceKey).accept(uriBuilder);
+                // required 쿼리 파리미터 값 추가
+                uriBuilder
+                    .queryParam("mapX", mapX)
+                    .queryParam("mapY", mapY)
+                    .queryParam("radius", radius);
+                // 추가적인 쿼리 파라미터 값 추가
+                if (additionalParams != null) {
+                    additionalParams.forEach(uriBuilder::queryParam);
+                }
+                return uriBuilder.build();
+            })
             .retrieve()
             .bodyToMono(LocationBasedResponse.class);
     }
