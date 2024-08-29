@@ -38,9 +38,11 @@ public class TourSpot {
         this.id = id;
         this.typeId = typeId;
         this.title = title;
+        this.likeCount = 1L;
+        this.dislikeCount = 1L;
     }
 
-    private static TourSpot of(String id, String typeId, String title) {
+    public static TourSpot of(String id, String typeId, String title) {
         return new TourSpot(id, typeId, title);
     }
 
