@@ -17,7 +17,6 @@ public class TourSpotRating {
     private double averageRating;
 
     @OneToOne
-    @MapsId
     @JoinColumn(name = "content_id")
     private TourSpot tourSpot;
 }
