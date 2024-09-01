@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  redis1:
+    container_name: redis1
+    hostname: redis1
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    restart: always
+    environment:
+      TZ: "Asia/Seoul"
+
+  redis2:
+    container_name: redis2
+    hostname: redis2
+    image: redis:latest
+    ports:
+      - "6380:6379"
+    restart: always
+    environment:
+      TZ: "Asia/Seoul"
+
+
+  mysql:
+    container_name: mysql
+    hostname: mysql
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${SPRING_DATASOURCE_DATABASE}
+      MYSQL_ROOT_USER: ${SPRING_DATASOURCE_USERNAME}
+      MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      TZ: "Asia/Seoul"
+
+  application:
+    container_name: application
+    hostname: application
+    image: minseokey/bts:latest
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      TZ: "Asia/Seoul"
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
+      KAKAO_REDIRECT_URI: ${KAKAO_REDIRECT_URI}
+      TMAP_KEY: ${TMAP_KEY}
+      TOUR_KEY: ${TOUR_KEY}
+      TOUR_BASE_PATH: ${TOUR_BASE_PATH}
+      JWT_SECRET: ${JWT_SECRET}
+
+    depends_on:
+      - redis1
+      - redis2
+      - mysql
+
+

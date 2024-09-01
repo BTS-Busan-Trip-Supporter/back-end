@@ -1,0 +1,91 @@
+spring:
+  datasource:
+    url: ${spring_datasource_url}
+    username: ${spring_datasource_username}
+    password: ${spring_datasource_password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create
+  #    properties:
+  #      hibernate:
+  #        show_sql: true
+  #        format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail_username}
+    password: ${mail_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
+            enable: true
+        debug: true
+
+
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-name: kakao
+            scope:
+              - profile_nickname
+              - account_email
+            client-id: ${kakao_client_id}
+            client-secret: ${kakao_client_secret}
+            redirect-uri: ${kakao_redirect_uri}
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+tmap:
+  key: ${tmap_key}
+  url: "https://apis.openapi.sk.com/transit/routes/sub"
+
+tour_api:
+  service_key: ${tour_key}
+  host: apis.data.go.kr
+  base_path: ${tour_base_path}
+
+logging.level:
+  org.hibernate.SQL: debug
+#  org.hibernate.type: trace
+
+jwt:
+  secret: ${jwt_secret}
+  access_expiration: 3600
+  refresh_expiration: 86400
+
+# 레디스 두개 사용
+# 1. Refresh 토큰용
+redis1:
+  host: localhost
+  port: 6379
+
+# 2. Mail 인증용
+redis2:
+  host: localhost
+  port: 6380
+
+server:
+  port: 8080
