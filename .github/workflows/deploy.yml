@@ -3,8 +3,8 @@ name: Deploy
 on:
   pull_request:
     branches:
-    - main
-    - develop
+      - main
+      - develop
   push:
     branches:
       - main
@@ -18,14 +18,13 @@ jobs:
       working-directory: ./
       image-name: bts
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
       EC2_USER: ${{ secrets.EC2_USER }}
-      EC2_KEY: ${{ secrets.EC2_KEY }}
-      EC2_HOST: ${{ secrets.EC2_HOST} }
-      COMPOSE_FILE_PATH: "/"
-          
+      EC2_HOST: ${{ secrets.EC2_HOST }}
+      COMPOSE_FILE_PATH: "/home/ubuntu/BTS"  # Docker Compose 파일을 업로드할 EC2 내의 경로
+
     steps:
-    # 체크아웃
+    # 소스 코드 체크아웃
     - name: Checkout Source
       uses: actions/checkout@v4
       
@@ -45,56 +44,63 @@ jobs:
     # Gradle 실행권한 부여
     - name: Grant execute permission to gradlew
       run: chmod +x ./gradlew
-      working-directory: ${{ env.working-directory }}
 
-    # Spring boot application 테스트 실행
+    # Gradle 캐시 설정 (빌드 속도 향상)
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    # Spring Boot 애플리케이션 테스트 실행
     - name: Test with gradle
       run: ./gradlew test
-      working-directory: ${{ env.working-directory }}
       
-      # Spring boot application 빌드
+    # Spring Boot 애플리케이션 빌드
     - name: Build with gradle
       run: ./gradlew clean build
-      working-directory: ${{ env.working-directory }}
 
-    # docker hub 로그인
+    # Docker Hub 로그인
     - name: Login docker hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    # 빌드 매트릭스 생성
+    # Docker 빌드 매트릭스 생성
     - name: docker build matrix
-      run: docker buildx create --name multi_arch_builder --platform linux/arm64,linux/amd64,linux/amd64/v2,linux/riscv64,linux/ppc64le,linux/s390x,linux/386,linux/mips64le,linux/mips64,linux/arm/v7,linux/arm/v6 --use
-      working-directory: ${{ env.working-directory }}
+      run: docker buildx create --name multi_arch_builder --platform linux/arm64,linux/amd64 --use
        
-    # 빌드 에이전트 설정, 빌드 수행 준비
+    # Docker 빌드 에이전트 설정 및 준비
     - name: docker agent config
       run: docker buildx inspect --bootstrap
-      working-directory: ${{ env.working-directory }}
   
-    # 빌드 및 푸시
+    # Docker 이미지 빌드 및 푸시
     - name: docker build and push
       run: docker buildx build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.image-name }} --platform=linux/arm64,linux/amd64 --push -f Dockerfile .
-      working-directory: ${{ env.working-directory }}
 
-    # SSH 클라이언트 다운
-    - name: Install SSH client
-      run: sudo apt-get install -y openssh-client
+    # SSH 키 파일 생성 (시크릿에서 가져온 값으로)
+    - name: Create SSH key file
+      run: echo "${{ secrets.EC2_KEY }}" > /tmp/EC2_KEY.pem
       
-    # 컴포즈 파일 업로드
+    # SSH 키 파일 권한 설정
+    - name: Set permissions for SSH key file
+      run: chmod 600 /tmp/EC2_KEY.pem
+
+    # Docker Compose 파일을 EC2 서버에 업로드
     - name: Upload Docker Compose file to EC2
-      run: scp -i ${{ secrets.EC2_KEY }} -o StrictHostKeyChecking=no ${{ env.working-directory }}/docker-compose.yml ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ env.COMPOSE_FILE_PATH }}
-    
+      run: scp -i /tmp/EC2_KEY.pem -o StrictHostKeyChecking=no ${{ env.working-directory }}/docker-compose.yml ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ env.COMPOSE_FILE_PATH }}
+
     # EC2에 배포
     - name: Deploy to EC2
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_KEY }}
+        key: /tmp/EC2_KEY.pem
         script: |
           cd ${{ env.COMPOSE_FILE_PATH }}
           docker-compose pull
-          docker-compose up -d 
+          docker-compose up -d
