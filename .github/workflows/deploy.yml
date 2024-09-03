@@ -23,6 +23,7 @@ jobs:
       DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
       EC2_USER: ${{ secrets.EC2_USER }}
       EC2_HOST: ${{ secrets.EC2_HOST }}
+      EC2_KEY: ${{ secrets.EC2_KEY }}
       COMPOSE_FILE_PATH: "/home/ubuntu/BTS"  # Docker Compose 파일을 업로드할 EC2 내의 경로
 
     steps:
@@ -85,7 +86,7 @@ jobs:
       
     # SSH 키 파일 생성 (시크릿에서 가져온 값으로)
     - name: Create SSH key file
-      run: echo "${{ secrets.EC2_KEY }}" > /tmp/EC2_KEY.pem
+      run: echo "${{ env.EC2_KEY }}" > /tmp/EC2_KEY.pem
       working-directory: ./
       
     # SSH 키 파일 권한 설정
