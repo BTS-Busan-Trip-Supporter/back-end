@@ -9,6 +9,9 @@ on:
     branches:
       - main
       - develop
+      
+      # for test
+      - feat/CICD
 
 jobs:
   deploy-BTS:
