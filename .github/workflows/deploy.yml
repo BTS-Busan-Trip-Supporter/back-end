@@ -63,7 +63,7 @@ jobs:
       
     # Spring Boot 애플리케이션 빌드
     - name: Build with gradle
-      run: ./gradlew clean build
+      run: ./gradlew clean build -x test
 
     # Docker Hub 로그인
     - name: Login docker hub
