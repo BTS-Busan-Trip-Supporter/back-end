@@ -81,7 +81,7 @@ jobs:
   
     # Docker 이미지 빌드 및 푸시
     - name: docker build and push
-      run: docker buildx build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.image-name }} --platform=linux/arm64,linux/amd64 --push -f Dockerfile .
+      run: docker buildx build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.image-name }} --platform=linux/arm64,linux/amd64 --push .
 
     # SSH 키 파일 생성 (시크릿에서 가져온 값으로)
     - name: Create SSH key file
