@@ -83,11 +83,21 @@ jobs:
     - name: docker push
       run: docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.image-name }}
       working-directory: ./
+
+    # 키 설정
+    - name: Create SSH key file
+      run: echo "${{ secrets.EC2_KEY }}" > /tmp/EC2_KEY.pem
+      working-directory: ./
+
+    # 권한 설정
+    - name: Set permissions for SSH key file
+      run: chmod 600 /tmp/EC2_KEY.pem
+      working-directory: ./
     
 
     # Docker Compose 파일을 EC2 서버에 업로드
     - name: Upload Docker Compose file to EC2
-      run: scp -i ${{ env.EC2_KEY}} -o StrictHostKeyChecking=no ./docker-compose.yml ${{ env.EC2_USER }}@${{ env.EC2_HOST }}:${{ env.COMPOSE_FILE_PATH }}
+      run: scp -i /tmp/EC2_KEY.pem -o StrictHostKeyChecking=no ./docker-compose.yml ${{ env.EC2_USER }}@${{ env.EC2_HOST }}:${{ env.COMPOSE_FILE_PATH }}
       working-directory: ./
       
     # EC2에 배포
@@ -96,7 +106,7 @@ jobs:
       with:
         host: ${{ env.EC2_HOST }}
         username: ${{ env.EC2_USER }}
-        key: ${{ env.EC2_KEY}}
+        key: ${{ env.EC2_KEY }}
         script: |
           cd ${{ env.COMPOSE_FILE_PATH }}
           docker-compose pull
