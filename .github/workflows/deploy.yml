@@ -60,7 +60,7 @@ jobs:
 
     # Spring Boot 애플리케이션 테스트 실행
     # - name: Test with gradle
-    #   run: ./gradlew test
+    #   run: ./gradlew test 
       
     # Spring Boot 애플리케이션 빌드
     - name: Build with gradle
