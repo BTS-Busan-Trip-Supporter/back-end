@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import org.bts.backend.domain.constant.ContentType;
 import org.bts.backend.dto.response.tourapi.DetailIntroResponse;
 
-public class OpeningHoursUtil {
+public class RegexUtil {
 
     public static LocalTime[] extractOpeningHours(
         String contentTypeId,
@@ -52,5 +52,19 @@ public class OpeningHoursUtil {
     ) {
         ContentType contentType = ContentType.of(Integer.parseInt(contentTypeId));
         return response.getOpeningTime(contentType);
+    }
+
+    public static String extractHomepageURL(String homepageText) {
+        String pattern = "href=\\\"(.*?)\\\"";
+
+        Pattern compiledPattern = Pattern.compile(pattern);
+        Matcher matcher = compiledPattern.matcher(homepageText);
+
+        // 매칭된 결과가 있는지 확인
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return null;
+        }
     }
 }

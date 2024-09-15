@@ -10,7 +10,7 @@ import org.bts.backend.dto.response.DayTripResponse;
 import org.bts.backend.dto.response.tourapi.DetailCommonResponse;
 import org.bts.backend.dto.response.tourapi.DetailIntroResponse;
 import org.bts.backend.repository.TourSpotRepository;
-import org.bts.backend.util.OpeningHoursUtil;
+import org.bts.backend.util.RegexUtil;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,7 +37,7 @@ public class DayTripServiceImpl implements DayTripService {
                         null
                     )
                     .block();
-                LocalTime[] openingHours = OpeningHoursUtil.extractOpeningHours(tourSpot.getTypeId(),
+                LocalTime[] openingHours = RegexUtil.extractOpeningHours(tourSpot.getTypeId(),
                     detailIntroResponse);
 
                 if(openingHours.length == 0) {
