@@ -1,6 +1,7 @@
 package org.bts.backend.service;
 
 import java.util.Map;
+import org.bts.backend.dto.response.tourapi.AreaBasedResponse;
 import org.bts.backend.dto.response.tourapi.DetailCommonResponse;
 import org.bts.backend.dto.response.tourapi.DetailIntroResponse;
 import org.bts.backend.dto.response.tourapi.LocationBasedResponse;
@@ -14,5 +15,6 @@ public interface TourAPIService {
     Mono<DetailCommonResponse> getDetailCommonResponse(String contentId, Map<String, String> additionalParams);
     Mono<DetailIntroResponse> getDetailIntroResponse(String contentId, String contentTypeId, Map<String, String> additionalParams);
     Mono<TotalCountResponse> getItemsTotalCountResponse(String targetPath, Map<String, String> requiredParams, Map<String, String> additionalParams);
-    void saveAllTourData(String location);
+    Mono<AreaBasedResponse> getAreaBasedResponse(String areaCode, Map<String, String> additionalParams);
+    void saveAllTourData();
 }
