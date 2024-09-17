@@ -1,6 +1,7 @@
 package org.bts.backend.dto.response.tourapi;
 
 import java.util.List;
+import org.bts.backend.dto.response.tourapi.DetailIntroResponse.Item;
 
 public record DetailCommonResponse(
     Response<DetailCommonBody> response
@@ -49,4 +50,10 @@ public record DetailCommonResponse(
     ) {
 
     }
+
+    private static final int FIRST_IDX = 0;
+    public Item getItem() {
+        return this.response.body().items.item.get(FIRST_IDX);
+    }
+
 }

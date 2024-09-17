@@ -1,6 +1,7 @@
 package org.bts.backend.dto.response.tourapi;
 
 import java.util.List;
+import org.bts.backend.domain.constant.ContentType;
 
 public record DetailIntroResponse(
     Response<DetailIntroBody> response
@@ -39,4 +40,35 @@ public record DetailIntroResponse(
         String opentimefood, // (39) 영업 시간
         String restdatefood // (39) 쉬는 날
     ) { }
+
+    private static final int FIRST_IDX = 0;
+    private Item getItem() {
+        return this.response.body().items.item.get(FIRST_IDX);
+    }
+
+    public String getOpeningTime(ContentType contentType) {
+        switch (contentType) {
+            case TOURIST_ATTRACTION -> {
+                return getItem().usetime();
+            }
+            case CULTURAL_FACILITY -> {
+                return getItem().usetimeculture();
+            }
+            case FESTIVAL_EVENT -> {
+                return getItem().playtime();
+            }
+            case LEISURE_SPORTS -> {
+                return getItem().usetimeleports();
+            }
+            case SHOPPING -> {
+                return getItem().opentime();
+            }
+            case RESTAURANT -> {
+                return getItem().opentimefood();
+            }
+            default -> {
+                return null;
+            }
+        }
+    }
 }

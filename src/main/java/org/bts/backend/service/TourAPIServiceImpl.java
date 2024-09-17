@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.bts.backend.domain.TourSpot;
+import org.bts.backend.dto.response.tourapi.AreaBasedResponse;
 import org.bts.backend.dto.response.tourapi.DetailCommonResponse;
 import org.bts.backend.dto.response.tourapi.DetailIntroResponse;
 import org.bts.backend.dto.response.tourapi.LocationBasedResponse;
@@ -120,7 +121,7 @@ public class TourAPIServiceImpl implements TourAPIService {
                             uriBuilder
                                 .scheme(SCHEME)
                                 .host(host)
-                                .path(basePath + "/searchKeyword1");
+                                .path(basePath + "/detailCommon1");
                             // 기본적인 쿼리 파라미터 값 추가
                             TourAPIQueryParams.addCommonParams(serviceKey).accept(uriBuilder);
                             // required 쿼리 파리미터 값 추가
@@ -197,13 +198,39 @@ public class TourAPIServiceImpl implements TourAPIService {
     }
 
     @Override
-    public void saveAllTourData(String location) {
-        Map<String, String> requiredParams = Map.of("keyword", encodeParam(location));
+    public Mono<AreaBasedResponse> getAreaBasedResponse(
+        String areaCode,
+        Map<String, String> additionalParams
+    ) {
+        WebClient webClient = getTourApiClient();
+
+        return webClient.get()
+                        .uri(uriBuilder -> {
+                            uriBuilder
+                                .scheme(SCHEME)
+                                .host(host)
+                                .path(basePath + "/areaBasedList1");
+                            // 기본적인 쿼리 파라미터 값 추가
+                            TourAPIQueryParams.addCommonParams(serviceKey).accept(uriBuilder);
+
+                            // 추가적인 쿼리 파라미터 값 추가
+                            if (additionalParams != null) {
+                                additionalParams.forEach(uriBuilder::queryParam);
+                            }
+                            return uriBuilder.build();
+                        })
+                        .retrieve()
+                        .bodyToMono(AreaBasedResponse.class);
+    }
+
+    @Override
+    public void saveAllTourData() {
+        Map<String, String> requiredParams = Map.of("areaCode", "6");
         Map<String, String> additionalParams = Map.of("listYN", "N");
 
         int totalCount = Objects.requireNonNull(
                                     getItemsTotalCountResponse(
-                                        "/searchKeyword1", requiredParams,
+                                        "/areaBasedList1", requiredParams,
                                         additionalParams
                                     )
                                         .block()
@@ -213,18 +240,19 @@ public class TourAPIServiceImpl implements TourAPIService {
 
         for(int i=1; i<=Math.ceil((double) totalCount / NUM_OF_ROWS); i++) {
             List<TourSpot> entities = new ArrayList<>();
-            SearchKeywordResponse searchKeywordResponse = getSearchKeywordResponse(
-                location, Map.of("numOfRows", String.valueOf(NUM_OF_ROWS))
+            AreaBasedResponse areaBasedResponse = getAreaBasedResponse(
+                "6", Map.of("numOfRows", String.valueOf(NUM_OF_ROWS), "pageNo", String.valueOf(i))
             )
-                .block();
+            .block();
 
-            assert searchKeywordResponse != null;
-            searchKeywordResponse.response().body().items().item().forEach(item ->
+            assert areaBasedResponse != null;
+            areaBasedResponse.response().body().items().item().forEach(item ->
                 entities.add(
                     TourSpot.of(
                         item.contentid(),
                         item.contenttypeid(),
-                        item.title()
+                        item.title(),
+                        item.sigungucode()
                     )
                 )
             );
