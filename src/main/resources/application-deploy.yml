@@ -77,6 +77,9 @@ jwt:
   access_expiration: 3600
   refresh_expiration: 86400
 
+oauth2_redirect_uri:
+  success: ${oauth2_success_uri}
+  failure: ${oauth2_failure_uri}
 
 server:
   port: 8080
