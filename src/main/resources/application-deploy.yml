@@ -78,12 +78,12 @@ jwt:
 # 레디스 두개 사용
 # 1. Refresh 토큰용
 redis1:
-  host: localhost
+  host: redis1
   port: 6379
 
 # 2. Mail 인증용
 redis2:
-  host: localhost
+  host: redis2
   port: 6380
 
 server:
