@@ -34,6 +34,8 @@ spring:
     redis:
       repositories:
         enabled: false
+      host: 0.0.0.0
+      port: 6379
 
   security:
     oauth2:
@@ -75,16 +77,6 @@ jwt:
   access_expiration: 3600
   refresh_expiration: 86400
 
-# 레디스 두개 사용
-# 1. Refresh 토큰용
-redis1:
-  host: 0.0.0.0
-  port: 6379
-
-# 2. Mail 인증용
-redis2:
-  host: 0.0.0.0
-  port: 6380
 
 server:
   port: 8080
