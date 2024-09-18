@@ -5,11 +5,12 @@ import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.bts.backend.domain.constant.DayTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class TourActivity extends StartEndTimeEntity {
+public class TourActivity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +21,16 @@ public class TourActivity extends StartEndTimeEntity {
 
     private Boolean recommend;
 
+    @Column(nullable = false)
+    private Integer dayNumber; // N 일차
+
+    @Enumerated
+    @Column(nullable = false)
+    private DayTime dayTime;
+
+    @Column(nullable = false)
+    private Integer orderIndex; // dayTime 이 같을 때 오더링
+
     // TODO: 이미지 데이터
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,18 +38,35 @@ public class TourActivity extends StartEndTimeEntity {
     private TourSpot tourSpot;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tour_day_id", nullable = false)
-    private TourDay tourDay;
+    @JoinColumn(name = "tour_log_id", nullable = false)
+    private TourLog tourLog;
 
     // -- 생성자 메서드 -- //
-    private TourActivity(String spotName, TourSpot tourSpot, TourDay tourDay) {
+    private TourActivity(
+        String spotName,
+        Integer dayNumber,
+        TourSpot tourSpot,
+        TourLog tourLog,
+        DayTime dayTime,
+        Integer orderIndex
+    ) {
         this.spotName = spotName;
+        this.dayNumber = dayNumber;
         this.tourSpot = tourSpot;
-        this.tourDay = tourDay;
+        this.tourLog = tourLog;
+        this.dayTime = dayTime;
+        this.orderIndex = orderIndex;
     }
 
-    public static TourActivity of(String spotName, TourSpot tourSpot, TourDay tourDay) {
-        return new TourActivity(spotName, tourSpot, tourDay);
+    public static TourActivity of(
+        String spotName,
+        Integer dayNumber,
+        TourSpot tourSpot,
+        TourLog tourLog,
+        DayTime dayTime,
+        Integer orderIndex
+    ) {
+        return new TourActivity(spotName, dayNumber, tourSpot, tourLog, dayTime, orderIndex);
     }
 
     // -- setter 메서드 -- //
