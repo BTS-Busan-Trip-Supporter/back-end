@@ -1,21 +1,22 @@
 package org.bts.backend.controller;
 
-import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bts.backend.dto.request.DayTripRequest;
 import org.bts.backend.dto.request.ScheduleTripRequest;
+import org.bts.backend.dto.request.ScheduleTripUpdateRequest;
 import org.bts.backend.dto.response.ApiResponse;
 import org.bts.backend.dto.response.DayTripResponse;
 import org.bts.backend.dto.response.ScheduleTripResponse;
+import org.bts.backend.repository.TourActivityRepository;
 import org.bts.backend.service.DayTripService;
 import org.bts.backend.service.ScheduleTripService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class TripController {
+
+    private final TourActivityRepository tourActivityRepository;
 
     private final DayTripService dayTripService;
     private final ScheduleTripService scheduleTripService;
@@ -56,5 +59,13 @@ public class TripController {
                 scheduleTripService.getScheduleTrip(logId)
             )
         );
+    }
+
+    @PutMapping("/trips/schedule/{logId}")
+    public void modifyScheduleTrip(
+        @PathVariable Long logId,
+        @RequestBody ScheduleTripUpdateRequest scheduleTripUpdateRequest
+    ) {
+        scheduleTripService.updateScheduleTrip(logId, scheduleTripUpdateRequest.toTourLogDto(), scheduleTripUpdateRequest.tourActivityDtoList());
     }
 }
