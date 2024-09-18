@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bts.backend.domain.constant.DayTime;
+import org.bts.backend.dto.TourLogDto;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -90,4 +91,7 @@ public class TourActivity {
         recommend = state;
     }
 
+    public void updateTourLog(TourLog tourLog) {
+        this.tourLog = tourLog;
+    }
 }

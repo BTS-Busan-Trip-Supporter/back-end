@@ -1,7 +1,6 @@
 package org.bts.backend.service;
 
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.bts.backend.domain.Member;
 import org.bts.backend.domain.TourActivity;
@@ -9,6 +8,7 @@ import org.bts.backend.domain.TourLog;
 import org.bts.backend.domain.TourSpot;
 import org.bts.backend.dto.TourActivityDto;
 import org.bts.backend.dto.TourLogDto;
+import org.bts.backend.dto.response.ScheduleTripResponse;
 import org.bts.backend.repository.MemberRepository;
 import org.bts.backend.repository.TourActivityRepository;
 import org.bts.backend.repository.TourLogRepository;
@@ -44,4 +44,20 @@ public class ScheduleTripServiceImpl implements ScheduleTripService {
             tourActivityRepository.save(tourActivity);
         }
     }
+
+    @Override
+    public ScheduleTripResponse getScheduleTrip(Long id) {
+        TourLog tourLogWithActivities = tourLogRepository.findByIdWithTourActivities(id);
+
+        return new ScheduleTripResponse(
+            TourLogDto.of(tourLogWithActivities),
+            tourLogWithActivities
+                .getTourActivities()
+                .stream()
+                .map(TourActivityDto::of)
+                .toList()
+        );
+    }
+
+
 }

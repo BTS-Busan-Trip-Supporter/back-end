@@ -1,5 +1,6 @@
 package org.bts.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import org.bts.backend.domain.TourActivity;
 import org.bts.backend.domain.TourLog;
@@ -14,6 +15,7 @@ public record TourActivityDto(
     Integer dayNumber,
     DayTime dayTime,
     Integer orderIndex,
+    @JsonIgnore
     TourLogDto tourLogDto,
     TourSpotDto tourSpotDto
 ) {

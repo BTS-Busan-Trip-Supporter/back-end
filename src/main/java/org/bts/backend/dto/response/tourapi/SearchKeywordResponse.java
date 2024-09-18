@@ -1,6 +1,7 @@
 package org.bts.backend.dto.response.tourapi;
 
 import java.util.List;
+import org.bts.backend.dto.response.tourapi.DetailCommonResponse.Item;
 
 public record SearchKeywordResponse(
     Response<SearchKeywordBody> response
@@ -42,5 +43,9 @@ public record SearchKeywordResponse(
             String title
     ) {
 
+    }
+
+    public List<Item> getItem() {
+        return this.response.body().items.item;
     }
 }
