@@ -49,6 +49,8 @@ public class ScheduleTripServiceImpl implements ScheduleTripService {
     public ScheduleTripResponse getScheduleTrip(Long id) {
         TourLog tourLogWithActivities = tourLogRepository.findByIdWithTourActivities(id);
 
+        // TODO: 각 관광지 별 대중교통 시간도 추가하기
+
         return new ScheduleTripResponse(
             TourLogDto.of(tourLogWithActivities),
             tourLogWithActivities
@@ -59,5 +61,63 @@ public class ScheduleTripServiceImpl implements ScheduleTripService {
         );
     }
 
+    @Override
+    @Transactional
+    public void updateScheduleTrip(Long id, TourLogDto tourLogDto, List<TourActivityDto> tourActivityDtoList) {
+        TourLog tourLog = tourLogRepository
+            .findById(id)
+            .orElseThrow(IllegalArgumentException::new);
 
+        for(TourActivityDto tourActivityDto : tourActivityDtoList) {
+            // 새로운 장소 추가
+            if(tourActivityDto.id() == null) {
+                TourSpot tourSpot = tourSpotRepository
+                    .findById(tourActivityDto.tourSpotDto().id())
+                    .orElseThrow(IllegalArgumentException::new);
+
+                TourActivity tourActivity = tourActivityDto.toEntity(tourLog, tourSpot);
+                tourActivityRepository.save(tourActivity);
+                tourLog.addTourActivity(tourActivity);
+                continue;
+            }
+
+            TourActivity tourActivity = tourActivityRepository
+                .findById(tourActivityDto.id())
+                .orElseThrow(IllegalArgumentException::new);
+
+            // 기존 장소 삭제
+            if(tourActivityDto.isDeleted()) {
+                // 기존 순서 변경하는 쿼리문 (-1)
+                tourActivityRepository.decrementOrderIndexFrom(
+                    id,
+                    tourActivity.getDayNumber(),
+                    tourActivity.getDayTime(),
+                    tourActivity.getOrderIndex()
+                );
+                tourActivityRepository.delete(tourActivity);
+                continue;
+            }
+
+            if(Boolean.TRUE.equals(tourActivityDto.isOrderChanged())) {
+                // 기존 순서 변경하는 쿼리문 (-1)
+                tourActivityRepository.decrementOrderIndexFrom(
+                    id,
+                    tourActivity.getDayNumber(),
+                    tourActivity.getDayTime(),
+                    tourActivity.getOrderIndex()
+                );
+                // 새로운 순서 변경하는 쿼리문 (+1)
+                tourActivityRepository.incrementOrderIndexFrom(
+                    id,
+                    tourActivityDto.dayNumber(),
+                    tourActivityDto.dayTime(),
+                    tourActivityDto.orderIndex()
+                );
+            }
+
+            tourActivity.updateSpotName(tourActivityDto.spotName());
+            tourActivity.updateDayTime(tourActivityDto.dayTime());
+            tourActivity.updateOrderIndex(tourActivityDto.orderIndex());
+        }
+    }
 }
