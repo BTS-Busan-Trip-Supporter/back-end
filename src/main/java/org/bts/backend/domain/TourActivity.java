@@ -71,6 +71,18 @@ public class TourActivity {
     }
 
     // -- setter 메서드 -- //
+    public void updateSpotName(String spotName) {
+        this.spotName = spotName;
+    }
+
+    public void updateDayTime(DayTime dayTime) {
+        this.dayTime = dayTime;
+    }
+
+    public void updateOrderIndex(Integer orderIndex) {
+        this.orderIndex = orderIndex;
+    }
+
     public void updateRecommend(boolean state) {
         if(Objects.equals(recommend, state)) {
             return;

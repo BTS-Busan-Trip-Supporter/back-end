@@ -9,7 +9,7 @@ import org.bts.backend.domain.constant.DayTime;
 
 @Builder
 public record TourActivityDto(
-    long id,
+    Long id,
     String spotName,
     Boolean recommend,
     Integer dayNumber,
@@ -17,7 +17,11 @@ public record TourActivityDto(
     Integer orderIndex,
     @JsonIgnore
     TourLogDto tourLogDto,
-    TourSpotDto tourSpotDto
+    TourSpotDto tourSpotDto,
+    @JsonIgnore
+    Boolean isOrderChanged,
+    @JsonIgnore
+    Boolean isDeleted
 ) {
 
     public static TourActivityDto of(TourActivity entity) {
@@ -29,7 +33,9 @@ public record TourActivityDto(
             entity.getDayTime(),
             entity.getOrderIndex(),
             TourLogDto.of(entity.getTourLog()),
-            TourSpotDto.of(entity.getTourSpot())
+            TourSpotDto.of(entity.getTourSpot()),
+            false,
+            false
         );
     }
 
