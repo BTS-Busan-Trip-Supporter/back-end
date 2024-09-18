@@ -12,6 +12,7 @@ import org.bts.backend.exception.before_servlet.CustomIOException;
 import org.bts.backend.repository.MemberRepository;
 import org.bts.backend.service.MemberServiceImpl;
 import org.bts.backend.service.TokenService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -37,6 +38,11 @@ public class OauthUtil implements OAuth2UserService<OAuth2UserRequest, OAuth2Use
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenService tokenService;
     private final CookieProvider cookieProvider;
+
+    @Value("${oauth2_redirect_uri.success}")
+    private String successRedirectUri;
+    @Value("${oauth2_redirect_uri.failure}")
+    private String failureRedirectUri;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -102,7 +108,7 @@ public class OauthUtil implements OAuth2UserService<OAuth2UserRequest, OAuth2Use
 
         try {
             // 리다이렉트
-            response.sendRedirect("http://localhost:8080/login/oauth2/success?accessToken="+accessToken);
+            response.sendRedirect(successRedirectUri+accessToken);
         }
         catch (IOException e) {
             throw new CustomAuthException();
@@ -114,7 +120,7 @@ public class OauthUtil implements OAuth2UserService<OAuth2UserRequest, OAuth2Use
     public void oauthFailureHandler(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception){
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         try {
-            response.sendRedirect("http://localhost:8080/login/oauth2/failure");
+            response.sendRedirect(failureRedirectUri);
         } catch (IOException e) {
             throw new CustomIOException(exception.getMessage());
         }

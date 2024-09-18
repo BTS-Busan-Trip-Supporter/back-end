@@ -9,9 +9,9 @@ on:
     branches:
       - main
       - develop
-      
-      # for test
-      - feat/CICD
+
+      # test
+      - bugfix/mail_sender
 
 jobs:
   deploy-BTS:

@@ -43,5 +43,4 @@ public class TripController {
         log.info("tourLogDto: {}", scheduleTripRequest.toTourLogDto());
         log.info("tourActivityDtoList: {}", scheduleTripRequest.tourActivityDtoList());
     }
-
 }

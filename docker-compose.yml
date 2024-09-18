@@ -1,26 +1,15 @@
 version: '3'
 
 services:
-  redis1:
-    container_name: redis1
-    hostname: redis1
+  redis:
+    container_name: redis
+    hostname: redis
     image: redis:latest
     ports:
       - "6379:6379"
     restart: always
     environment:
       TZ: "Asia/Seoul"
-
-  redis2:
-    container_name: redis2
-    hostname: redis2
-    image: redis:latest
-    ports:
-      - "6380:6379"
-    restart: always
-    environment:
-      TZ: "Asia/Seoul"
-
 
   mysql:
     container_name: mysql
@@ -56,10 +45,11 @@ services:
       TOUR_KEY: ${TOUR_KEY}
       TOUR_BASE_PATH: ${TOUR_BASE_PATH}
       JWT_SECRET: ${JWT_SECRET}
+      OAUTH2_SUCCESS_URI: ${OAUTH2_SUCCESS_URI}
+      OAUTH2_FAILURE_URI: ${OAUTH2_FAILURE_URI}
 
     depends_on:
-      - redis1
-      - redis2
+      - redis
       - mysql
 
 

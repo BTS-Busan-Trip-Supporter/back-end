@@ -3,6 +3,7 @@ package org.bts.backend.util;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bts.backend.repository.MailCertRedisRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.bts.backend.exception.after_servlet.MailException;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class MailProvider {
     // 메일인증절차 -> redis에 (email : UUID) 저장, TTL 10분
     // 확인 되면 (email : "ACK")로 변경
@@ -44,6 +46,7 @@ public class MailProvider {
             helper.setText(content, true);
             mailSender.send(message);
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new MailException() {
             };
         }
