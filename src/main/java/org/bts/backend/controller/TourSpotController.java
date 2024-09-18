@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bts.backend.dto.response.ApiResponse;
 import org.bts.backend.dto.response.TourSpotDetailResponse;
+import org.bts.backend.dto.response.TourSpotResponse;
 import org.bts.backend.service.TourAPIService;
 import org.bts.backend.service.TourSpotService;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,13 @@ public class TourSpotController {
         return ResponseEntity.ok(ApiResponse.success(tourSpotService.getTourSpotDetailResponse(contentId, contentTypeId)));
     }
 
+    @GetMapping("/tourspots")
+    public ResponseEntity<ApiResponse<TourSpotResponse>> getTourSpot(
+        @RequestParam String keyword,
+        @RequestParam String sigunguCode
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(tourSpotService.getTourSpotResponse(keyword, sigunguCode)));
+    }
 
     // TODO: 인가 관련해서 관리자만 실행시킬 수 있도록 할 것
     @PostMapping("/admin/tourdata")
