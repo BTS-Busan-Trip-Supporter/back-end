@@ -9,6 +9,7 @@ import org.bts.backend.dto.request.ScheduleTripRequest;
 import org.bts.backend.dto.response.ApiResponse;
 import org.bts.backend.dto.response.DayTripResponse;
 import org.bts.backend.service.DayTripService;
+import org.bts.backend.service.ScheduleTripService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TripController {
 
     private final DayTripService dayTripService;
+    private final ScheduleTripService scheduleTripService;
 
     @PostMapping("/trips/day")
     public ResponseEntity<ApiResponse<List<DayTripResponse>>> getRecommendDayTrip(
@@ -38,9 +40,7 @@ public class TripController {
     }
 
     @PostMapping("/trips/schedule")
-    public void createScheduleTrip(@AuthenticationPrincipal Principal principal, @RequestBody ScheduleTripRequest scheduleTripRequest) {
-        log.info("Member Id: {}" ,principal.getName());
-        log.info("tourLogDto: {}", scheduleTripRequest.toTourLogDto());
-        log.info("tourActivityDtoList: {}", scheduleTripRequest.tourActivityDtoList());
+    public void createScheduleTrip(@RequestBody ScheduleTripRequest scheduleTripRequest) {
+        scheduleTripService.saveScheduleTrip("test@email.com", scheduleTripRequest.toTourLogDto(), scheduleTripRequest.tourActivityDtoList());
     }
 }
