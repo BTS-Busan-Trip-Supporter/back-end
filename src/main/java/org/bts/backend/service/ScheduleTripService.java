@@ -11,4 +11,5 @@ public interface ScheduleTripService {
     ScheduleTripResponse getScheduleTrip(Long id);
     void updateScheduleTrip(Long id, TourLogDto tourLogDto, List<TourActivityDto> tourActivityDtoList);
     void deleteScheduleTrip(Long id);
+    void recommendTourActivity(Long id, Boolean recommend);
 }

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bts.backend.dto.request.DayTripRequest;
 import org.bts.backend.dto.request.ScheduleTripRequest;
 import org.bts.backend.dto.request.ScheduleTripUpdateRequest;
+import org.bts.backend.dto.request.TourActivityRecommendRequest;
 import org.bts.backend.dto.response.ApiResponse;
 import org.bts.backend.dto.response.DayTripResponse;
 import org.bts.backend.dto.response.ScheduleTripResponse;
@@ -75,5 +76,12 @@ public class TripController {
         @PathVariable Long logId
     ) {
         scheduleTripService.deleteScheduleTrip(logId);
+    }
+
+    @PutMapping("/trips/activity/recommend")
+    public void recommendTourActivity(
+        @RequestBody TourActivityRecommendRequest request
+    ) {
+        scheduleTripService.recommendTourActivity(request.tourActivityId(), request.recommend());
     }
 }
