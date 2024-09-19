@@ -120,4 +120,13 @@ public class ScheduleTripServiceImpl implements ScheduleTripService {
             tourActivity.updateOrderIndex(tourActivityDto.orderIndex());
         }
     }
+
+    @Override
+    @Transactional
+    public void deleteScheduleTrip(Long id) {
+        TourLog tourLog = tourLogRepository
+            .findById(id)
+            .orElseThrow(IllegalArgumentException::new);
+        tourLogRepository.delete(tourLog);
+    }
 }

@@ -38,8 +38,7 @@ public class TourLog extends StartEndTimeEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "tour_log_id")
+    @OneToMany(mappedBy = "tourLog", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TourActivity> tourActivities = new ArrayList<>();
 
     // -- 생성자 메서드 -- //

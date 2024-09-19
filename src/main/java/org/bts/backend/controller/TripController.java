@@ -13,6 +13,7 @@ import org.bts.backend.repository.TourActivityRepository;
 import org.bts.backend.service.DayTripService;
 import org.bts.backend.service.ScheduleTripService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -67,5 +68,12 @@ public class TripController {
         @RequestBody ScheduleTripUpdateRequest scheduleTripUpdateRequest
     ) {
         scheduleTripService.updateScheduleTrip(logId, scheduleTripUpdateRequest.toTourLogDto(), scheduleTripUpdateRequest.tourActivityDtoList());
+    }
+
+    @DeleteMapping("/trips/schedule/{logId}")
+    public void deleteScheduleTrip(
+        @PathVariable Long logId
+    ) {
+        scheduleTripService.deleteScheduleTrip(logId);
     }
 }

@@ -8,8 +8,7 @@ import org.bts.backend.dto.response.ScheduleTripResponse;
 public interface ScheduleTripService {
 
     void saveScheduleTrip(String email, TourLogDto tourLogDto, List<TourActivityDto> tourActivityDtoList);
-
     ScheduleTripResponse getScheduleTrip(Long id);
-
     void updateScheduleTrip(Long id, TourLogDto tourLogDto, List<TourActivityDto> tourActivityDtoList);
+    void deleteScheduleTrip(Long id);
 }

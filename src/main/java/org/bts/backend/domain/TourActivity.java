@@ -38,7 +38,7 @@ public class TourActivity {
     @JoinColumn(name = "tour_spot_id", nullable = false)
     private TourSpot tourSpot;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "tour_log_id", nullable = false)
     private TourLog tourLog;
 
