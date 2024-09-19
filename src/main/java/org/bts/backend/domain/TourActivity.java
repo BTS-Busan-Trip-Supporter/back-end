@@ -22,6 +22,8 @@ public class TourActivity {
 
     private Boolean recommend;
 
+    private String history;
+
     @Column(nullable = false)
     private Integer dayNumber; // N 일차
 
@@ -101,6 +103,10 @@ public class TourActivity {
         }
 
         recommend = state;
+    }
+
+    public void updateHistory(String history) {
+        this.history = history;
     }
 
     public void updateTourLog(TourLog tourLog) {

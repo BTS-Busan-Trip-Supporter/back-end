@@ -138,4 +138,14 @@ public class ScheduleTripServiceImpl implements ScheduleTripService {
             .orElseThrow(IllegalArgumentException::new);
         tourActivity.updateRecommend(recommend);
     }
+
+    @Override
+    @Transactional
+    public void updateTourActivityHistory(Long id, String history) {
+        TourActivity tourActivity = tourActivityRepository
+            .findById(id)
+            .orElseThrow(IllegalArgumentException::new);
+
+        tourActivity.updateHistory(history);
+    }
 }
