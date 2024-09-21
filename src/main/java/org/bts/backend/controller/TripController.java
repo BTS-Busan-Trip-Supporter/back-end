@@ -2,24 +2,36 @@ package org.bts.backend.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bts.backend.dto.request.DayTripRequest;
+import org.bts.backend.dto.request.ScheduleTripRequest;
+import org.bts.backend.dto.request.ScheduleTripUpdateRequest;
+import org.bts.backend.dto.request.TourActivityHistoryRequest;
+import org.bts.backend.dto.request.TourActivityRecommendRequest;
 import org.bts.backend.dto.response.ApiResponse;
 import org.bts.backend.dto.response.DayTripResponse;
-import org.bts.backend.dto.response.TourSpotDetailResponse;
+import org.bts.backend.dto.response.ScheduleTripResponse;
+import org.bts.backend.repository.TourActivityRepository;
 import org.bts.backend.service.DayTripService;
+import org.bts.backend.service.ScheduleTripService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class TripController {
 
+    private final TourActivityRepository tourActivityRepository;
+
     private final DayTripService dayTripService;
+    private final ScheduleTripService scheduleTripService;
 
     @PostMapping("/trips/day")
     public ResponseEntity<ApiResponse<List<DayTripResponse>>> getRecommendDayTrip(
@@ -34,5 +46,46 @@ public class TripController {
                 )
             )
         );
+    }
+
+    @PostMapping("/trips/schedule")
+    public void createScheduleTrip(@RequestBody ScheduleTripRequest scheduleTripRequest) {
+        scheduleTripService.saveScheduleTrip("test@email.com", scheduleTripRequest.toTourLogDto(), scheduleTripRequest.tourActivityDtoList());
+    }
+
+    @GetMapping("/trips/schedule/{logId}")
+    public ResponseEntity<ApiResponse<ScheduleTripResponse>> getScheduleTrip(
+        @PathVariable Long logId
+    ) {
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                scheduleTripService.getScheduleTrip(logId)
+            )
+        );
+    }
+
+    @PutMapping("/trips/schedule/{logId}")
+    public void modifyScheduleTrip(
+        @PathVariable Long logId,
+        @RequestBody ScheduleTripUpdateRequest scheduleTripUpdateRequest
+    ) {
+        scheduleTripService.updateScheduleTrip(logId, scheduleTripUpdateRequest.toTourLogDto(), scheduleTripUpdateRequest.tourActivityDtoList());
+    }
+
+    @DeleteMapping("/trips/schedule/{logId}")
+    public void deleteScheduleTrip(
+        @PathVariable Long logId
+    ) {
+        scheduleTripService.deleteScheduleTrip(logId);
+    }
+
+    @PutMapping("/trips/activity/recommend")
+    public void recommendTourActivity(@RequestBody TourActivityRecommendRequest request) {
+        scheduleTripService.recommendTourActivity(request.tourActivityId(), request.recommend());
+    }
+
+    @PutMapping("/trips/activity/history")
+    public void modifyTourActivityHistory(@RequestBody TourActivityHistoryRequest request) {
+        scheduleTripService.updateTourActivityHistory(request.tourActivityId(), request.history());
     }
 }

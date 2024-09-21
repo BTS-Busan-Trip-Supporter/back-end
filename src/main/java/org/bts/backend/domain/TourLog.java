@@ -1,5 +1,6 @@
 package org.bts.backend.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,7 +9,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +38,9 @@ public class TourLog extends StartEndTimeEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @OneToMany(mappedBy = "tourLog", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TourActivity> tourActivities = new ArrayList<>();
+
     // -- 생성자 메서드 -- //
     private TourLog(
         String name,
@@ -56,5 +63,10 @@ public class TourLog extends StartEndTimeEntity {
         LocalDateTime endTime
     ) {
         return new TourLog(name, locationName, member, startTime, endTime);
+    }
+
+    public void addTourActivity(TourActivity tourActivity) {
+        this.tourActivities.add(tourActivity);
+        tourActivity.updateTourLog(this);
     }
 }

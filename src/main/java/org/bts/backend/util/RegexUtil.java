@@ -33,11 +33,11 @@ public class RegexUtil {
 
             return new LocalTime[] {
                 LocalTime.of(
-                    Integer.parseInt(openTimeSt.nextToken()),
+                    Math.min(23, Integer.parseInt(openTimeSt.nextToken())),
                     Integer.parseInt(openTimeSt.nextToken())
                 ),
                 LocalTime.of(
-                    Integer.parseInt(closeTimeSt.nextToken()),
+                    Math.min(23, Integer.parseInt(closeTimeSt.nextToken())),
                     Integer.parseInt(closeTimeSt.nextToken())
                 )
             };

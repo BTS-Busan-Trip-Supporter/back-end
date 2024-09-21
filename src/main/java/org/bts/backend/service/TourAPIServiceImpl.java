@@ -204,6 +204,7 @@ public class TourAPIServiceImpl implements TourAPIService {
     ) {
         WebClient webClient = getTourApiClient();
 
+        Map<String, String> requiredParams = Map.of("areaCode", areaCode);
         return webClient.get()
                         .uri(uriBuilder -> {
                             uriBuilder
@@ -212,7 +213,8 @@ public class TourAPIServiceImpl implements TourAPIService {
                                 .path(basePath + "/areaBasedList1");
                             // 기본적인 쿼리 파라미터 값 추가
                             TourAPIQueryParams.addCommonParams(serviceKey).accept(uriBuilder);
-
+                            // required 쿼리 파리미터 값 추가
+                            requiredParams.forEach(uriBuilder::queryParam);
                             // 추가적인 쿼리 파라미터 값 추가
                             if (additionalParams != null) {
                                 additionalParams.forEach(uriBuilder::queryParam);
@@ -241,7 +243,7 @@ public class TourAPIServiceImpl implements TourAPIService {
         for(int i=1; i<=Math.ceil((double) totalCount / NUM_OF_ROWS); i++) {
             List<TourSpot> entities = new ArrayList<>();
             AreaBasedResponse areaBasedResponse = getAreaBasedResponse(
-                "6", Map.of("numOfRows", String.valueOf(NUM_OF_ROWS), "pageNo", String.valueOf(i))
+                "6", Map.of("numOfRows", String.valueOf(NUM_OF_ROWS), "pageNo", String.valueOf(i), "listYN", "Y")
             )
             .block();
 
