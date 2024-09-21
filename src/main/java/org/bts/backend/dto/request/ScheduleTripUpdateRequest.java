@@ -1,5 +1,6 @@
 package org.bts.backend.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.bts.backend.domain.constant.DayTime;
@@ -77,9 +78,13 @@ public record ScheduleTripUpdateRequest(
         DayTime dayTime,
         Integer orderIndex,
         TourSpotData tourSpotData,
+        @Schema(description = "일정 수정 시 새롭게 추가된 것인지")
         Boolean isNew,
+        @Schema(description = "일정 수정 시 시간대가 변경된 것인지")
         Boolean isOrderChanged,
+        @Schema(description = "일정 수정 시 예정 했던 관광지가 변경된 것인지")
         Boolean isTourSpotChanged,
+        @Schema(description = "일정 수정 시 기존에 추가 했었지만 삭제된 것인지")
         Boolean isDeleted
     ) {
 
