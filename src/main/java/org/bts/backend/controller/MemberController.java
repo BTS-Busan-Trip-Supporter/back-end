@@ -70,7 +70,6 @@ public class MemberController {
     public ResponseEntity<ApiResponse<String>> logout(@RequestHeader("Authorization") String accessToken){
         // 레디스에 있는 RefreshToken 삭제
         tokenService.logout(accessToken);
-
         // 쿠키 삭제
         ResponseCookie responseCookie = cookieProvider.deleteRefreshCookie();
 
