@@ -55,8 +55,12 @@ public class TripController {
 
     @PostMapping("/trips/schedule")
     @Operation(summary = "여행 일정 만들기", description = "ScheduleTripRequest 를 기반으로 여행 일정을 생성한다.")
-    public void createScheduleTrip(@RequestBody ScheduleTripRequest scheduleTripRequest) {
-        scheduleTripService.saveScheduleTrip("test@email.com", scheduleTripRequest.toTourLogDto(), scheduleTripRequest.tourActivityDtoList());
+    public ResponseEntity<ApiResponse<Long>> createScheduleTrip(@RequestBody ScheduleTripRequest scheduleTripRequest) {
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                scheduleTripService.saveScheduleTrip("test@email.com", scheduleTripRequest.toTourLogDto(), scheduleTripRequest.tourActivityDtoList())
+            )
+        );
     }
 
     @GetMapping("/trips/schedule")
@@ -64,8 +68,11 @@ public class TripController {
     public ResponseEntity<ApiResponse<ScheduleTripsResponse>> getAllScheduleTrips(
         @AuthenticationPrincipal Principal principal
     ) {
-        log.info("user email: {}", principal.getName());
-        return null;
+        return ResponseEntity.ok(
+            ApiResponse.success(
+                scheduleTripService.getAllScheduleTrips("test@email.com")
+            )
+        );
     }
 
     @GetMapping("/trips/schedule/{logId}")

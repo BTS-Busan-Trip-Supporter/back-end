@@ -28,7 +28,7 @@ public class ScheduleTripServiceImpl implements ScheduleTripService {
 
     @Override
     @Transactional
-    public void saveScheduleTrip(String email, TourLogDto tourLogDto, List<TourActivityDto> tourActivityDtoList) {
+    public Long saveScheduleTrip(String email, TourLogDto tourLogDto, List<TourActivityDto> tourActivityDtoList) {
         Member member = memberRepository
             .findByEmail(email)
             .orElseThrow(IllegalArgumentException::new);
@@ -44,6 +44,7 @@ public class ScheduleTripServiceImpl implements ScheduleTripService {
             TourActivity tourActivity = tourActivityDto.toEntity(tourLog, tourSpot);
             tourActivityRepository.save(tourActivity);
         }
+        return tourLog.getId();
     }
 
     @Override
