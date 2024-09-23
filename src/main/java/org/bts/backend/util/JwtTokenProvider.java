@@ -85,7 +85,7 @@ public class JwtTokenProvider {
 
     // Token의 UUID 와 RefreshTokenId 비교
     public boolean sameRefreshToken(String r_token, String tokenId) {
-        return getRefreshTokenId(r_token).equals(tokenId);
+        return r_token.equals(tokenId);
     }
 
     public boolean validateToken(String token) {

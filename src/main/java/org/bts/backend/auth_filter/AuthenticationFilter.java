@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bts.backend.dto.request.LoginRequest;
 import org.bts.backend.dto.response.ApiResponse;
 import org.bts.backend.exception.before_servlet.CustomIOException;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
@@ -35,6 +37,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     // 인증 시도, HTTPRequest, HTTPResponse를 받아서 인증을 시도하는 메소드
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException{
+        log.info("Enter AuthenticationFilter");
         Authentication authentication;
         try {
             // request의 body에서 email, password를 읽어옴

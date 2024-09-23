@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bts.backend.util.JwtTokenProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,12 +18,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @RequiredArgsConstructor
+@Slf4j
 public class AuthorizationFilter extends OncePerRequestFilter{
     private final JwtTokenProvider jwtTokenProvider;
     // 필터링을 통해 요청이 들어왔을 때, 해당 요청이 허용되는지 확인하는 메소드
     // 토큰 검사후, @Secured를 위해 Authentication 객체 발행.
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        log.info("Enter AuthorizationFilter");
         // 헤더에서 토큰 추출
         String token = request.getHeader("Authorization");
         // 토큰이 없거나 이상하면 -> 익명권한 부여

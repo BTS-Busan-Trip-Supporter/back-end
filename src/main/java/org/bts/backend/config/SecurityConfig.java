@@ -54,9 +54,8 @@ public class SecurityConfig {
                                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 로그인 설정 비활성화 -> OAuth2 로그인 사용
                 .formLogin(AbstractHttpConfigurer::disable)
-                // 로그아웃 설정(쿠키 삭제)
-                .logout((logout) -> logout.logoutUrl("/logout")
-                        .deleteCookies("RefreshToken"))
+                // 로그아웃 설정 비활성화
+                .logout(AbstractHttpConfigurer::disable)
                 // OAuth2 로그인 설정
                 .oauth2Login(oauth ->
                         oauth.userInfoEndpoint(userInfo -> userInfo
