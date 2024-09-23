@@ -9,6 +9,7 @@ import org.bts.backend.domain.TourSpot;
 import org.bts.backend.dto.TourActivityDto;
 import org.bts.backend.dto.TourLogDto;
 import org.bts.backend.dto.response.ScheduleTripResponse;
+import org.bts.backend.dto.response.ScheduleTripsResponse;
 import org.bts.backend.repository.MemberRepository;
 import org.bts.backend.repository.TourActivityRepository;
 import org.bts.backend.repository.TourLogRepository;
@@ -57,6 +58,18 @@ public class ScheduleTripServiceImpl implements ScheduleTripService {
                 .getTourActivities()
                 .stream()
                 .map(TourActivityDto::of)
+                .toList()
+        );
+    }
+
+    @Override
+    public ScheduleTripsResponse getAllScheduleTrips(String email) {
+        List<TourLog> tourLogs = tourLogRepository.findAllByMemberEmail(email);
+
+        return new ScheduleTripsResponse(
+            tourLogs
+                .stream()
+                .map(TourLogDto::of)
                 .toList()
         );
     }
