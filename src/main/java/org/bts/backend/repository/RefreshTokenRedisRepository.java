@@ -18,7 +18,7 @@ public class RefreshTokenRedisRepository {
 
     // 시간제한 10분
     public void save(RefreshToken refreshToken) {
-        redisTemplate.opsForValue().set(refreshToken.getEmail(), refreshToken, 600, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(refreshToken.getEmail(), refreshToken, 2592000, TimeUnit.MILLISECONDS);
     }
 
     public Optional<RefreshToken> findById(String email) {

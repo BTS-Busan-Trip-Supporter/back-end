@@ -11,6 +11,7 @@ import org.bts.backend.exception.before_servlet.CustomAuthException;
 import org.bts.backend.exception.before_servlet.CustomIOException;
 import org.bts.backend.repository.MemberRepository;
 import org.bts.backend.service.MemberServiceImpl;
+import org.bts.backend.service.SecurityUserDetailService;
 import org.bts.backend.service.TokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
@@ -35,6 +36,7 @@ public class OauthUtil implements OAuth2UserService<OAuth2UserRequest, OAuth2Use
 
     private final MemberRepository memberRepository;
     private final MemberServiceImpl memberService;
+    private final SecurityUserDetailService userDetailService;
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenService tokenService;
     private final CookieProvider cookieProvider;
@@ -75,7 +77,7 @@ public class OauthUtil implements OAuth2UserService<OAuth2UserRequest, OAuth2Use
             memberRepository.save(member);
         }
         // member의 Role 을 이용해 authorities를 구성.
-        Collection<? extends GrantedAuthority> authorities = memberService.loadUserByUsername(member.getEmail()).getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = userDetailService.loadUserByUsername(member.getEmail()).getAuthorities();
         return new DefaultOAuth2User(authorities, oAuthAttributeDto.getAttributes(), userNameAttributeName);
     }
 
