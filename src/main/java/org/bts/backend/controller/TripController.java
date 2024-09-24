@@ -18,7 +18,10 @@ import org.bts.backend.repository.TourActivityRepository;
 import org.bts.backend.service.DayTripService;
 import org.bts.backend.service.ScheduleTripService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,21 +59,21 @@ public class TripController {
     @PostMapping("/trips/schedule")
     @Operation(summary = "여행 일정 만들기", description = "ScheduleTripRequest 를 기반으로 여행 일정을 생성한다.")
     public ResponseEntity<ApiResponse<Long>> createScheduleTrip(@RequestBody ScheduleTripRequest scheduleTripRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(
             ApiResponse.success(
-                scheduleTripService.saveScheduleTrip("test@email.com", scheduleTripRequest.toTourLogDto(), scheduleTripRequest.tourActivityDtoList())
+                scheduleTripService.saveScheduleTrip(authentication.getName(), scheduleTripRequest.toTourLogDto(), scheduleTripRequest.tourActivityDtoList())
             )
         );
     }
 
     @GetMapping("/trips/schedule")
     @Operation(summary = "사용자의 모든 여행 일정 가져오기", description = "사용자의 모든 여행 일정을 불러온다. (페이지네이션 X)")
-    public ResponseEntity<ApiResponse<ScheduleTripsResponse>> getAllScheduleTrips(
-        @AuthenticationPrincipal Principal principal
-    ) {
+    public ResponseEntity<ApiResponse<ScheduleTripsResponse>> getAllScheduleTrips() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(
             ApiResponse.success(
-                scheduleTripService.getAllScheduleTrips("test@email.com")
+                scheduleTripService.getAllScheduleTrips(authentication.getName())
             )
         );
     }
