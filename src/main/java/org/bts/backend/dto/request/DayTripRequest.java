@@ -11,7 +11,7 @@ public record DayTripRequest(
     String contentTypeId,
     @Schema(description = "부산광역시의 시/군/구 코드", allowableValues = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"})
     String sigunguCode,
-    @Schema(description = "언제 가시나요", allowableValues = {"MORNING", "MIDNOON", "AFTERNOON", "EVENING"})
+    @Schema(description = "언제 가시나요", allowableValues = {"MORNING", "AFTERNOON", "EVENING", "NIGHT"})
     List<DayTime> dayTimes,
     @Schema(description = "여행 일자")
     LocalDate tourDate
