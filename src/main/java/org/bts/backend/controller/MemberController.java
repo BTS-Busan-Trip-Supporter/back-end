@@ -2,9 +2,13 @@ package org.bts.backend.controller;
 
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.bts.backend.dto.request.ChangeNameRequest;
+import org.bts.backend.dto.request.ChangePWRequest;
 import org.bts.backend.dto.request.MailCertRequest;
 import org.bts.backend.dto.request.MemberRequest;
 import org.bts.backend.dto.response.ApiResponse;
@@ -93,4 +97,27 @@ public class MemberController {
                 .body(ApiResponse.success(jwtTokenResponse));
     }
 
+    @PutMapping("/pwchange")
+    @Operation(summary = "비밀번호 변경", description = "비밀번호를 변경.")
+    public ResponseEntity<ApiResponse<String>> changePassword(@RequestHeader("Authorization") String accessToken,
+                                                              @RequestBody ChangePWRequest request){
+        memberService.changePassword(accessToken, request.oldPassword(), request.newPassword());
+        return ResponseEntity.ok(ApiResponse.success("비밀번호가 변경되었습니다."));
+    }
+
+    @PutMapping("/namechange")
+    @Operation(summary = "이름 변경", description = "이름을 변경.")
+    public ResponseEntity<ApiResponse<String>> changeName(@RequestHeader("Authorization") String accessToken,
+                                                              @RequestBody ChangeNameRequest request) throws JsonProcessingException {
+        memberService.changeName(accessToken, request.newName());
+        return ResponseEntity.ok(ApiResponse.success("이름이 변경되었습니다."));
+    }
+
+
+    @GetMapping("/mypage")
+    @Operation(summary = "회원정보 조회", description = "회원정보를 조회합니다.")
+    public ResponseEntity<ApiResponse<MemberResponse>> searchMember(@RequestHeader("Authorization") String accessToken){
+        MemberResponse memberResponse = memberService.findMember(accessToken);
+        return ResponseEntity.ok(ApiResponse.success(memberResponse));
+    }
 }
