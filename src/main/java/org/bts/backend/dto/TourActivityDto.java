@@ -2,6 +2,7 @@ package org.bts.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
+import org.bts.backend.api.tmap.TmapResponse;
 import org.bts.backend.domain.TourActivity;
 import org.bts.backend.domain.TourLog;
 import org.bts.backend.domain.TourSpot;
@@ -19,13 +20,14 @@ public record TourActivityDto(
     @JsonIgnore
     TourLogDto tourLogDto,
     TourSpotDto tourSpotDto,
+    Integer totalTime,
     @JsonIgnore
     Boolean isOrderChanged,
     @JsonIgnore
     Boolean isDeleted
 ) {
 
-    public static TourActivityDto of(TourActivity entity) {
+    public static TourActivityDto of(TourActivity entity, Integer totalTime) {
         return new TourActivityDto(
             entity.getId(),
             entity.getSpotName(),
@@ -36,6 +38,7 @@ public record TourActivityDto(
             entity.getOrderIndex(),
             TourLogDto.of(entity.getTourLog()),
             TourSpotDto.of(entity.getTourSpot()),
+            totalTime,
             false,
             false
         );
