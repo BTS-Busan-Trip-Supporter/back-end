@@ -85,12 +85,18 @@ public class TourActivity {
         this.orderIndex = orderIndex;
     }
 
-    public void updateRecommend(boolean state) {
+    public void updateRecommend(Boolean state) {
         if(Objects.equals(recommend, state)) {
             return;
         }
 
-        if(state) {
+        if (state == null) {
+          if(Boolean.TRUE.equals(recommend)) {
+              tourSpot.decreaseLikeCount();
+          } else {
+              tourSpot.decreaseDislikeCount();
+          }
+        } else if(Boolean.TRUE.equals(state)) {
             tourSpot.increaseLikeCount();
             if(recommend != null) {
                 tourSpot.decreaseDislikeCount();
