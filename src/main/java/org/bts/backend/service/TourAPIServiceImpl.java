@@ -254,7 +254,9 @@ public class TourAPIServiceImpl implements TourAPIService {
                         item.contentid(),
                         item.contenttypeid(),
                         item.title(),
-                        item.sigungucode()
+                        item.sigungucode(),
+                        Double.valueOf(item.mapx()),
+                        Double.valueOf(item.mapy())
                     )
                 )
             );

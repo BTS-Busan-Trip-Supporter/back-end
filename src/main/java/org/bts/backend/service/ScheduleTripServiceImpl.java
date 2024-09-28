@@ -1,7 +1,11 @@
 package org.bts.backend.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.bts.backend.api.tmap.TmapAPI;
+import org.bts.backend.api.tmap.TmapResponse;
 import org.bts.backend.domain.Member;
 import org.bts.backend.domain.TourActivity;
 import org.bts.backend.domain.TourLog;
@@ -16,6 +20,7 @@ import org.bts.backend.repository.TourLogRepository;
 import org.bts.backend.repository.TourSpotRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +30,8 @@ public class ScheduleTripServiceImpl implements ScheduleTripService {
     private final TourLogRepository tourLogRepository;
     private final TourActivityRepository tourActivityRepository;
     private final TourSpotRepository tourSpotRepository;
+
+    private final TmapAPI tmapAPI;
 
     @Override
     @Transactional
@@ -51,15 +58,46 @@ public class ScheduleTripServiceImpl implements ScheduleTripService {
     public ScheduleTripResponse getScheduleTrip(Long id) {
         TourLog tourLogWithActivities = tourLogRepository.findByIdWithTourActivities(id);
 
-        // TODO: 각 관광지 별 대중교통 시간도 추가하기
+        List<TourActivity> tourActivities = tourLogWithActivities.getTourActivities();
+        List<TourActivityDto> tourActivityDtoResult = new ArrayList<>();
+
+        for(int i=0; i<tourActivities.size(); i++) {
+            String startX = String.valueOf(tourActivities.get(i).getTourSpot().getMapX());
+            String startY = String.valueOf(tourActivities.get(i).getTourSpot().getMapY());
+
+            String endX = null;
+            String endY = null;
+
+            if(i < tourActivities.size() - 1) {
+                endX = String.valueOf(tourActivities.get(i + 1).getTourSpot().getMapX());
+                endY = String.valueOf(tourActivities.get(i + 1).getTourSpot().getMapY());
+            }
+
+            TmapResponse tmapResponse = null;
+            if(i < tourActivities.size() - 1) {
+                tmapResponse = tmapAPI.requestTmapAPI(startX, startY, endX, endY).block();
+            }
+
+            Integer totalTime;
+            if(tmapResponse == null
+                || tmapResponse.getMetaData() == null
+                || tmapResponse.getMetaData().getPlan() == null
+                || tmapResponse.getMetaData().getPlan().getItineraries() == null) {
+                totalTime = null;
+            } else {
+                totalTime = tmapResponse.getMetaData().getPlan().getItineraries().get(0).getTotalTime();
+            }
+            tourActivityDtoResult.add(
+                TourActivityDto.of(
+                    tourActivities.get(i),
+                    totalTime
+                )
+            );
+        }
 
         return new ScheduleTripResponse(
             TourLogDto.of(tourLogWithActivities),
-            tourLogWithActivities
-                .getTourActivities()
-                .stream()
-                .map(TourActivityDto::of)
-                .toList()
+            tourActivityDtoResult
         );
     }
 
