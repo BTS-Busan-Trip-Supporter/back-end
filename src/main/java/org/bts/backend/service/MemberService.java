@@ -6,7 +6,19 @@ import org.bts.backend.dto.response.MemberResponse;
 
 public interface MemberService {
     void saveLocalMember(String name, String email, String password);
-    void saveSocialMember(String name, String email, AuthProvider authProvider);
+
+    boolean checkMemberEmail(String email);
+
+    void sendCertMail(String email);
+
+    boolean checkCertMail(String email, String uuid);
+
+    void changePassword(String accesstoken, String oldPassword, String newPassword);
+
+    void changeName(String accesstoken, String name);
+
+    MemberResponse findMember(String accesstoken);
+
 
     // For test
     List<MemberResponse> findAllMember();
