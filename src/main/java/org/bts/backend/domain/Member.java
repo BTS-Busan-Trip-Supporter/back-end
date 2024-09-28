@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.bts.backend.domain.constant.AuthProvider;
 import org.bts.backend.domain.constant.Role;
 import org.bts.backend.domain.converter.AuthProviderConverter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(
@@ -59,6 +60,14 @@ public class Member {
         List<Role> roles
     ) {
         return new Member(email, name, password, authProvider, roles);
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
+    public void changeName(String name) {
+        this.name = name;
     }
 
     // -- 비지니스 로직 (검증, setter) -- //

@@ -11,19 +11,23 @@ import org.bts.backend.dto.response.MemberResponse;
 import org.bts.backend.exception.after_servlet.NoCredException;
 import org.bts.backend.exception.after_servlet.UsernameNotFoundException;
 import org.bts.backend.repository.MemberRepository;
+import org.bts.backend.util.JwtTokenProvider;
 import org.bts.backend.util.MailProvider;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl implements MemberService, UserDetailsService {
+public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
     private final MailProvider mailProvider;
+    private final JwtTokenProvider tokenUtil;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void saveLocalMember(String name, String email, String password) {
@@ -53,27 +57,36 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
     }
 
     @Override
+    public void changePassword(String accesstoken, String password, String newPassword) {
+        Member member = memberRepository.findByEmail(tokenUtil.getEmailForAccessToken(accesstoken))
+                                        .orElseThrow(UsernameNotFoundException::new);
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new UsernameNotFoundException("비밀번호가 일치하지 않습니다.");
+        }
+        member.changePassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(member);
+    }
+
+    @Override
+    public void changeName(String accesstoken, String name) {
+        Member member = memberRepository.findByEmail(tokenUtil.getEmailForAccessToken(accesstoken))
+                                        .orElseThrow(UsernameNotFoundException::new);
+        member.changeName(name);
+        memberRepository.save(member);
+    }
+
+    @Override
+    public MemberResponse findMember(String accessToken) {
+        return memberRepository.findByEmail(tokenUtil.getEmailForAccessToken(accessToken))
+                               .map(MemberResponse::toResponse)
+                               .orElseThrow(UsernameNotFoundException::new);
+    }
+
+    @Override
     public List<MemberResponse> findAllMember() {
         return memberRepository.findAll()
                                .stream()
                                .map(MemberResponse::toResponse)
                                .toList();
-    }
-
-    // 인증시 사용자를 검색하는 메소드.
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmail(username)
-                .orElseThrow(UsernameNotFoundException::new);
-
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        for (Role role : member.getRoles()) {
-            authorities.add(new SimpleGrantedAuthority(role.name()));
-        }
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(member.getEmail())
-                .password(member.getPassword())
-                .authorities(authorities)
-                .build();
     }
 }
