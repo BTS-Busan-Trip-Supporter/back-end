@@ -29,6 +29,10 @@ public class TourSpot {
     @Column(nullable = false)
     private String sigunguCode;
 
+    private Double mapX;
+
+    private Double mapY;
+
     @ColumnDefault("1")
     private Long likeCount;
 
@@ -37,17 +41,19 @@ public class TourSpot {
 
 
     // -- 생성자 메서드 -- //
-    private TourSpot(String id, String typeId, String title, String sigunguCode) {
+    private TourSpot(String id, String typeId, String title, String sigunguCode, Double mapX, Double mapY) {
         this.id = id;
         this.typeId = typeId;
         this.title = title;
         this.sigunguCode = sigunguCode;
         this.likeCount = 1L;
         this.dislikeCount = 1L;
+        this.mapX = mapX;
+        this.mapY = mapY;
     }
 
-    public static TourSpot of(String id, String typeId, String title, String sigunguCode) {
-        return new TourSpot(id, typeId, title, sigunguCode);
+    public static TourSpot of(String id, String typeId, String title, String sigunguCode, Double mapX, Double mapY) {
+        return new TourSpot(id, typeId, title, sigunguCode, mapX, mapY);
     }
 
     // -- setter 메서드 -- //
