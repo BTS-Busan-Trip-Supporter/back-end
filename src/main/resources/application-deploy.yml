@@ -74,8 +74,8 @@ logging.level:
 
 jwt:
   secret: ${jwt_secret}
-  access_expiration: 3600
-  refresh_expiration: 86400
+  access_expiration: 2592000
+  refresh_expiration: 8640000
 
 oauth2_redirect_uri:
   success: ${oauth2_success_uri}
